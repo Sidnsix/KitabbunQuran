@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qur'an — Mushaf Digital</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#f5f7f3;--card:#fff;--text:#17231d;--muted:#718078;
+  --primary:#17745a;--primary2:#0f5b47;--line:#e1e8e3;--gold:#c89b3c;
+  --shadow:0 10px 35px rgba(19,50,39,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{max-width:1200px;margin:auto;padding:15px 20px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:var(--primary)}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:var(--primary);color:white;display:grid;place-items:center;font-family:Amiri;font-size:23px}
+.search{flex:1;position:relative;max-width:600px;margin:auto}
+.search input{width:100%;border:1px solid var(--line);background:#f7faf8;border-radius:14px;padding:12px 15px 12px 43px;outline:none;color:var(--text)}
+.search input:focus{border-color:#9bc8ba;box-shadow:0 0 0 4px rgba(23,116,90,.08)}
+.search span{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.nav-btn{border:1px solid var(--line);background:white;border-radius:12px;padding:10px 12px;color:var(--text)}
+.hero{max-width:1200px;margin:28px auto 0;padding:0 20px}
+.hero-card{border-radius:25px;padding:30px;background:linear-gradient(135deg,#125e4b,#238267);color:white;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-card:after{content:"۞";position:absolute;right:35px;top:-25px;font-family:Amiri;font-size:180px;opacity:.08}
+.hero h1{margin:0 0 7px;font-family:Amiri;font-size:38px}
+.hero p{margin:0;color:#dcefe9}
+.continue{margin-top:22px;display:inline-flex;align-items:center;gap:10px;background:white;color:var(--primary);border:0;padding:11px 15px;border-radius:12px;font-weight:600}
+.layout{max-width:1200px;margin:25px auto;padding:0 20px 50px;display:grid;grid-template-columns:1fr 290px;gap:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.card-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-head h2{font-size:18px;margin:0}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;color:var(--muted)}
+.filters button.active{background:#e4f2ed;color:var(--primary);border-color:#c6e1d7}
+.surah-list{display:grid;grid-template-columns:repeat(2,1fr)}
+.surah{padding:16px 18px;display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--line);transition:.18s}
+.surah:hover{background:#f7faf8}
+.surah-num{width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:#eef5f1;color:var(--primary);font-weight:700;font-size:13px}
+.surah-info{min-width:0;flex:1}
+.surah-name{font-weight:600}
+.surah-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.arabic-name{font-family:Amiri;font-size:22px}
+.bookmark{border:0;background:transparent;color:#a4afa9;font-size:20px}
+.bookmark.saved{color:var(--gold)}
+.sidebar{display:flex;flex-direction:column;gap:18px}
+.juz-grid{padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.juz{border:1px solid var(--line);background:#fbfcfb;border-radius:10px;padding:10px 4px;text-align:center;font-size:12px;color:#516159}
+.juz:hover,.juz.active{background:#e6f3ee;border-color:#c3ded4;color:var(--primary);font-weight:600}
+.saved-list{padding:8px 15px 15px}
+.saved-empty{color:var(--muted);font-size:13px;padding:12px 5px}
+.saved-item{display:flex;align-items:center;gap:10px;padding:10px 5px;border-bottom:1px solid var(--line)}
+.saved-item button{border:0;background:transparent;text-align:left;flex:1;color:var(--text)}
+.reader{display:none}
+.reader.show{display:block}
+.reader-head{padding:22px;display:flex;justify-content:space-between;align-items:center}
+.reader-title{font-family:Amiri;font-size:32px;margin:0}
+.reader-sub{color:var(--muted);font-size:13px}
+.ayah{padding:25px 24px;border-top:1px solid var(--line)}
+.ayah-top{display:flex;justify-content:space-between;gap:10px}
+.ayah-num{color:var(--primary);font-weight:700}
+.ayah-ar{font-family:Amiri,serif;font-size:31px;line-height:2;text-align:right;margin:8px 0}
+.ayah-id{line-height:1.7;color:#536159}
+.audio{border:1px solid var(--line);background:#f7faf8;border-radius:9px;padding:7px 10px;color:var(--primary)}
+.empty{padding:45px;text-align:center;color:var(--muted)}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2}.surah-list{grid-template-columns:1fr}.nav{flex-wrap:wrap}.search{order:3;flex-basis:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="nav">
+    <div class="brand"><div class="brand-mark">ق</div> Qur'an</div>
+    <div class="search"><span>⌕</span><input id="search" placeholder="Cari surat atau arti surat..." autocomplete="off"></div>
+    <button class="nav-btn" id="bookmarkBtn">☆ Tersimpan</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-card">
+    <h1>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h1>
+    <p>Baca Al-Qur'an dengan tenang, simpan ayat favorit, dan jelajahi surat berdasarkan juz.</p>
+    <button class="continue" id="continueBtn">▶ Lanjut membaca</button>
+  </div>
+</section>
+
+<main class="layout">
+  <section>
+    <div class="card" id="listCard">
+      <div class="card-head">
+        <h2 id="sectionTitle">Daftar Surat</h2>
+        <div class="filters">
+          <button class="active" data-filter="all">Semua</button>
+          <button data-filter="saved">Tersimpan</button>
+        </div>
+      </div>
+      <div class="surah-list" id="surahList"></div>
+      <div class="empty" id="empty" style="display:none">Tidak ada surat yang cocok.</div>
+    </div>
+
+    <div class="card reader" id="reader">
+      <div class="reader-head">
+        <div>
+          <h2 class="reader-title" id="readerTitle"></h2>
+          <div class="reader-sub" id="readerSub"></div>
+        </div>
+        <button class="nav-btn" id="closeReader">← Kembali</button>
+      </div>
+      <div id="ayahList"></div>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="card">
+      <div class="card-head"><h2>Pilih Juz</h2></div>
+      <div class="juz-grid" id="juzGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Bookmark</h2></div>
+      <div class="saved-list" id="savedList"></div>
+    </div>
+  </aside>
+</main>
+</div>
+
+<script>
+/*
+  Sumber data:
+  - Metadata surat memakai daftar standar 114 surat.
+  - Teks ayat diambil dari API publik AlQuran Cloud saat surat dibuka.
+  Internet diperlukan untuk memuat teks ayat.
+*/
+const surahs = [
+["Al-Fatihah","Pembukaan","الفاتحة",7,1],["Al-Baqarah","Sapi Betina","البقرة",286,2],
+["Ali 'Imran","Keluarga Imran","آل عمران",200,3],["An-Nisa","Wanita","النساء",176,4],
+["Al-Ma'idah","Hidangan","المائدة",120,6],["Al-An'am","Binatang Ternak","الأنعام",165,7],
+["Al-A'raf","Tempat Tertinggi","الأعراف",206,8],["Al-Anfal","Rampasan Perang","الأنفال",75,9],
+["At-Taubah","Pengampunan","التوبة",129,10],["Yunus","Nabi Yunus","يونس",109,11],
+["Hud","Nabi Hud","هود",123,11],["Yusuf","Nabi Yusuf","يوسف",111,12],
+["Ar-Ra'd","Guruh","الرعد",43,13],["Ibrahim","Nabi Ibrahim","إبراهيم",52,13],
+["Al-Hijr","Pegunungan Hijr","الحجر",99,14],["An-Nahl","Lebah","النحل",128,14],
+["Al-Isra","Perjalanan Malam","الإسراء",111,15],["Al-Kahf","Penghuni Gua","الكهف",110,15],
+["Maryam","Maryam","مريم",98,16],["Taha","Taha","طه",135,16],
+["Al-Anbiya","Para Nabi","الأنبياء",112,17],["Al-Hajj","Haji","الحج",78,17],
+["Al-Mu'minun","Orang Mukmin","المؤminون",118,18],["An-Nur","Cahaya","النور",64,18],
+["Al-Furqan","Pembeda","الفرقان",77,18],["Asy-Syu'ara","Para Penyair","الشعراء",227,19],
+["An-Naml","Semut","النمل",93,19],["Al-Qasas","Kisah-Kisah","القصص",88,20],
+["Al-'Ankabut","Laba-Laba","العنكبوت",69,20],["Ar-Rum","Bangsa Romawi","الروم",60,21],
+["Luqman","Luqman","لقمان",34,21],["As-Sajdah","Sajdah","السجدة",30,21],
+["Al-Ahzab","Golongan Yang Bersekutu","الأحزاب",73,21],["Saba'","Kaum Saba'","سبأ",54,22],
+["Fatir","Pencipta","فاطر",45,22],["Yasin","Yasin","يس",83,23],
+["As-Saffat","Barisan-Barisan","الصافات",182,23],["Sad","Sad","ص",88,23],
+["Az-Zumar","Rombongan","الزمر",75,24],["Ghafir","Yang Mengampuni","غافر",85,24],
+["Fussilat","Yang Dijelaskan","فصلت",54,24],["Asy-Syura","Musyawarah","الشورى",53,25],
+["Az-Zukhruf","Perhiasan","الزخرف",89,25],["Ad-Dukhan","Kabut","الدخان",59,25],
+["Al-Jasiyah","Yang Berlutut","الجاثية",37,25],["Al-Ahqaf","Bukit Pasir","الأحقاف",35,26],
+["Muhammad","Nabi Muhammad","محمد",38,26],["Al-Fath","Kemenangan","الفتح",29,26],
+["Al-Hujurat","Kamar-Kamar","الحجرات",18,26],["Qaf","Qaf","ق",45,26],
+["Adz-Dzariyat","Angin Yang Menerbangkan","الذاريات",60,27],["At-Tur","Bukit","الطور",49,27],
+["An-Najm","Bintang","النجم",62,27],["Al-Qamar","Bulan","القمر",55,27],
+["Ar-Rahman","Yang Maha Pemurah","الرحمن",78,27],["Al-Waqi'ah","Hari Kiamat","الواقعة",96,27],
+["Al-Hadid","Besi","الحديد",29,27],["Al-Mujadilah","Wanita Yang Mengajukan Gugatan","المجادلة",22,28],
+["Al-Hasyr","Pengusiran","الحشر",24,28],["Al-Mumtahanah","Wanita Yang Diuji","الممتحنة",13,28],
+["As-Saff","Barisan","الصف",14,28],["Al-Jumu'ah","Hari Jumat","الجمعة",11,28],
+["Al-Munafiqun","Orang Munafik","المنافقون",11,28],["At-Taghabun","Hari Dinampakkan Kesalahan","التغابن",18,28],
+["At-Talaq","Talak","الطلاق",12,28],["At-Tahrim","Pengharaman","التحريم",12,28],
+["Al-Mulk","Kerajaan","الملك",30,29],["Al-Qalam","Pena","القلم",52,29],
+["Al-Haqqah","Hari Kiamat","الحاقة",52,29],["Al-Ma'arij","Tempat-Tempat Naik","المعارج",44,29],
+["Nuh","Nabi Nuh","نوح",28,29],["Al-Jinn","Jin","الجن",28,29],
+["Al-Muzzammil","Orang Yang Berselimut","المزمل",20,29],["Al-Muddassir","Orang Yang Berkemul","المدثر",56,29],
+["Al-Qiyamah","Kiamat","القيامة",40,29],["Al-Insan","Manusia","الإنسان",31,29],
+["Al-Mursalat","Malaikat Yang Diutus","المرسلات",50,29],["An-Naba'","Berita Besar","النبأ",40,30],
+["An-Nazi'at","Malaikat Yang Mencabut","النازعات",46,30],["Abasa","Ia Bermuka Masam","عبس",42,30],
+["At-Takwir","Menggulung","التكوير",29,30],["Al-Infitar","Terbelah","الانفطار",19,30],
+["Al-Mutaffifin","Orang Yang Curang","المطففين",36,30],["Al-Insyiqaq","Terbelah","الانشقاق",25,30],
+["Al-Buruj","Gugusan Bintang","البروج",22,30],["At-Tariq","Yang Datang Di Malam Hari","الطارق",17,30],
+["Al-A'la","Yang Paling Tinggi","الأعلى",19,30],["Al-Ghasyiyah","Hari Pembalasan","الغاشية",26,30],
+["Al-Fajr","Fajar","الفجر",30,30],["Al-Balad","Negeri","البلد",20,30],
+["Asy-Syams","Matahari","الشمس",15,30],["Al-Lail","Malam","الليل",21,30],
+["Ad-Duha","Waktu Duha","الضحى",11,30],["Asy-Syarh","Melapangkan","الشرح",8,30],
+["At-Tin","Buah Tin","التين",8,30],["Al-'Alaq","Segumpal Darah","العلق",19,30],
+["Al-Qadr","Kemuliaan","القدر",5,30],["Al-Bayyinah","Bukti Nyata","البينة",8,30],
+["Az-Zalzalah","Kegoncangan","الزلزلة",8,30],["Al-'Adiyat","Kuda Perang","العاديات",11,30],
+["Al-Qari'ah","Hari Kiamat","القارعة",11,30],["At-Takatsur","Bermegah-Megahan","التكاثر",8,30],
+["Al-'Asr","Masa","العصر",3,30],["Al-Humazah","Pengumpat","الهمزة",9,30],
+["Al-Fil","Gajah","الفيل",5,30],["Quraisy","Suku Quraisy","قريش",4,30],
+["Al-Ma'un","Barang Yang Berguna","الماعون",7,30],["Al-Kautsar","Nikmat Yang Banyak","الكوثر",3,30],
+["Al-Kafirun","Orang Kafir","الكافرون",6,30],["An-Nasr","Pertolongan","النصر",3,30],
+["Al-Lahab","Gejolak Api","المسد",5,30],["Al-Ikhlas","Ikhlas","الإخلاص",4,30],
+["Al-Falaq","Waktu Subuh","الفلق",5,30],["An-Nas","Manusia","الناس",6,30]
+];
+
+let bookmarks = JSON.parse(localStorage.getItem("quranBookmarks") || "[]");
+let currentJuz = "all";
+let currentFilter = "all";
+let currentSurah = null;
+
+const list = document.getElementById("surahList");
+const empty = document.getElementById("empty");
+const search = document.getElementById("search");
+
+function saveBookmarks(){localStorage.setItem("quranBookmarks",JSON.stringify(bookmarks));renderSaved();}
+
+function renderList(){
+  const q=search.value.trim().toLowerCase();
+  const filtered=surahs.map((s,i)=>({...s,i})).filter(s=>{
+    const matchJuz=currentJuz==="all" || s[4]===Number(currentJuz);
+    const matchSaved=currentFilter==="all" || bookmarks.includes(s.i);
+    const matchSearch=!q || s[0].toLowerCase().includes(q) || s[1].toLowerCase().includes(q) || s[2].includes(q);
+    return matchJuz&&matchSaved&&matchSearch;
+  });
+  list.innerHTML="";
+  filtered.forEach(s=>{
+    const el=document.createElement("div");el.className="surah";
+    el.innerHTML=`<div class="surah-num">${s.i+1}</div>
+      <div class="surah-info"><div class="surah-name">${s[0]}</div><div class="surah-meta">${s[1]} · ${s[3]} ayat · Juz ${s[4]}</div></div>
+      <div class="arabic-name">${s[2]}</div>
+      <button class="bookmark ${bookmarks.includes(s.i)?"saved":""}" title="Bookmark">${bookmarks.includes(s.i)?"★":"☆"}</button>`;
+    el.addEventListener("click",e=>{if(e.target.closest(".bookmark")) return;openSurah(s.i)});
+    el.querySelector(".bookmark").onclick=()=>{toggleBookmark(s.i)};
+    list.appendChild(el);
+  });
+  empty.style.display=filtered.length?"none":"block";
+  document.getElementById("sectionTitle").textContent=currentJuz==="all"?"Daftar Surat":`Juz ${currentJuz}`;
+}
+function toggleBookmark(i){
+  bookmarks=bookmarks.includes(i)?bookmarks.filter(x=>x!==i):[...bookmarks,i];
+  saveBookmarks();renderList();
+}
+function renderSaved(){
+  const box=document.getElementById("savedList");box.innerHTML="";
+  if(!bookmarks.length){box.innerHTML='<div class="saved-empty">Belum ada surat yang disimpan.</div>';return}
+  bookmarks.forEach(i=>{
+    const s=surahs[i];const row=document.createElement("div");row.className="saved-item";
+    row.innerHTML=`<span>★</span><button>${s[0]}<br><small style="color:#718078">${s[3]} ayat</small></button>`;
+    row.querySelector("button").onclick=()=>openSurah(i);box.appendChild(row);
+  });
+}
+function renderJuz(){
+  const g=document.getElementById("juzGrid");
+  g.innerHTML='<button class="juz active" data-juz="all">Semua</button>';
+  for(let j=1;j<=30;j++)g.innerHTML+=`<button class="juz" data-juz="${j}">Juz ${j}</button>`;
+  g.querySelectorAll(".juz").forEach(b=>b.onclick=()=>{
+    currentJuz=b.dataset.juz;g.querySelectorAll(".juz").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+    currentFilter="all";document.querySelectorAll(".filters button").forEach(x=>x.classList.toggle("active",x.dataset.filter==="all"));renderList();
+  });
+}
+async function openSurah(i){
+  currentSurah=i;const s=surahs[i];
+  document.getElementById("listCard").style.display="none";
+  document.getElementById("reader").classList.add("show");
+  document.getElementById("readerTitle").textContent=`${s[0]} — ${s[2]}`;
+  document.getElementById("readerSub").textContent=`Surat ke-${i+1} · ${s[3]} ayat · Juz ${s[4]}`;
+  const box=document.getElementById("ayahList");
+  box.innerHTML='<div class="empty">Memuat ayat…</div>';
+  try{
+    const r=await fetch(`https://api.alquran.cloud/v1/surah/${i+1}/editions/quran-uthmani,id.indonesian`);
+    if(!r.ok)throw new Error();
+    const data=await r.json(), ar=data.data[0].ayahs, id=data.data[1].ayahs;
+    box.innerHTML="";
+    ar.forEach((a,k)=>{
+      const d=document.createElement("div");d.className="ayah";
+      d.innerHTML=`<div class="ayah-top"><span class="ayah-num">Ayat ${a.numberInSurah}</span><button class="audio" onclick="speak(${JSON.stringify(a.text).replaceAll("'","&#39;")})">🔊</button></div>
+      <div class="ayah-ar">${a.text}</div><div class="ayah-id">${id[k]?.text||""}</div>`;
+      box.appendChild(d);
+    });
+  }catch(e){box.innerHTML='<div class="empty">Gagal memuat ayat. Pastikan koneksi internet aktif lalu coba lagi.</div>'}
+}
+function speak(text){if("speechSynthesis" in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="ar-SA";speechSynthesis.speak(u)}}
+
+search.addEventListener("input",renderList);
+document.querySelectorAll(".filters button").forEach(b=>b.onclick=()=>{
+  currentFilter=b.dataset.filter;document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderList();
+});
+document.getElementById("bookmarkBtn").onclick=()=>{
+  currentFilter="saved";document.querySelectorAll(".filters button").forEach(x=>x.classList.toggle("active",x.dataset.filter==="saved"));renderList();
+  document.getElementById("listCard").scrollIntoView({behavior:"smooth"});
+};
+document.getElementById("closeReader").onclick=()=>{
+  document.getElementById("reader").classList.remove("show");document.getElementById("listCard").style.display="block";
+};
+document.getElementById("continueBtn").onclick=()=>openSurah(Number(localStorage.getItem("lastSurah")||113));
+window.addEventListener("beforeunload",()=>{if(currentSurah!==null)localStorage.setItem("lastSurah",currentSurah)});
+renderJuz();renderList();renderSaved();
+</script>
+</body>
+</html>
