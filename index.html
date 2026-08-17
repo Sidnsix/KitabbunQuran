@@ -66,6 +66,8 @@ button{cursor:pointer}
 .suggestion-google{background:var(--bg)}
 .suggestion-google .ic{font-size:15px}
 .suggestion-google .sname{color:var(--primary)}
+.suggestion-juz{background:#eef5f1}
+.suggestion-juz .sname{color:var(--primary);font-weight:700}
 
 /* --- Panel pengaturan (tema/latar) --- */
 .settings-wrap{position:relative}
@@ -526,13 +528,48 @@ function escapeHtml(text){
 const suggestBox = document.getElementById("suggestions");
 let hlIndex = -1;
 
+// Kenali kalau yang diketik itu maksudnya "juz N", biar bisa langsung
+// loncat ke juz itu dari kotak pencarian atas, tanpa perlu scroll ke
+// sidebar Juz (yang di HP letaknya di bawah daftar surat).
+function parseJuzQuery(q){
+  const nq = q.trim().toLowerCase();
+  let m = nq.match(/^juz\.?\s*(\d{1,2})$/);
+  if(!m) m = nq.match(/^(\d{1,2})$/); // ketik angka polos juga dianggap juz
+  if(!m) return null;
+  const n = Number(m[1]);
+  return (n>=1 && n<=30) ? n : null;
+}
+
+function selectJuzFromSearch(n){
+  currentJuz = String(n);
+  document.querySelectorAll(".juz").forEach(x=>x.classList.toggle("active", x.dataset.juz===String(n)));
+  currentFilter = "all";
+  document.querySelectorAll(".filters button").forEach(x=>x.classList.toggle("active", x.dataset.filter==="all"));
+  suggestBox.classList.remove("show");
+  search.value = "";
+  renderList();
+  document.getElementById("listCard").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
 function renderSuggestions(){
   const q = search.value.trim();
   if(!q){ suggestBox.classList.remove("show"); suggestBox.innerHTML=""; hlIndex=-1; return; }
   const matches = surahs.map((s,i)=>({...s,i}))
     .filter(s=>fuzzyMatch(q,s[0])||fuzzyMatch(q,s[1])||fuzzyMatch(q,s[2]))
     .slice(0,6);
-  let html = matches.map(s=>`
+  const juzMatch = parseJuzQuery(q);
+  let html = "";
+  if(juzMatch){
+    html += `
+      <div class="suggestion suggestion-juz" id="juzSuggest" data-juz="${juzMatch}">
+        <span class="ic">📖</span>
+        <div>
+          <div class="sname">Buka Juz ${juzMatch}</div>
+          <div class="smeta">Tampilkan semua surat di juz ini</div>
+        </div>
+      </div>`;
+  }
+  html += matches.map(s=>`
     <div class="suggestion" data-i="${s.i}">
       <span class="ic">⌕</span>
       <div>
@@ -568,6 +605,13 @@ function renderSuggestions(){
       e.preventDefault();
       suggestBox.classList.remove("show");
       window.open(`https://www.google.com/search?q=${encodeURIComponent("quran surat "+q)}`,"_blank","noopener");
+    });
+  }
+  const juzEl = document.getElementById("juzSuggest");
+  if(juzEl){
+    juzEl.addEventListener("mousedown",e=>{
+      e.preventDefault();
+      selectJuzFromSearch(Number(juzEl.dataset.juz));
     });
   }
 }
