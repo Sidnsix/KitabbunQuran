@@ -62,13 +62,18 @@ button{cursor:pointer}
 .reader-head{padding:22px;display:flex;justify-content:space-between;align-items:center}
 .reader-title{font-family:Amiri;font-size:32px;margin:0}
 .reader-sub{color:var(--muted);font-size:13px}
-.ayah{padding:25px 24px;border-top:1px solid var(--line)}
-.ayah-top{display:flex;justify-content:space-between;gap:10px}
-.ayah-num{color:var(--primary);font-weight:700}
-.ayah-ar{font-family:Amiri,serif;font-size:31px;line-height:2;text-align:right;margin:8px 0}
-.ayah-id{line-height:1.7;color:#536159}
-.audio{border:1px solid var(--line);background:#f7faf8;border-radius:9px;padding:7px 10px;color:var(--primary)}
+.ayah{padding:22px 24px 28px;border-top:1px solid var(--line)}
+.ayah-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.ayah-num{color:var(--primary);font-weight:700;font-size:13px}
+.ayah-ar{font-family:Amiri,serif;font-size:34px;line-height:2.15;text-align:right;margin:8px 0 14px;color:#12664f;direction:rtl}
+.ayah-latin{line-height:1.85;color:#286b9b;background:#f2f8fc;border-left:4px solid #79afd2;padding:10px 13px;border-radius:8px;margin:10px 0;font-family:Georgia,serif;font-style:italic}
+.ayah-id{line-height:1.85;color:#3f4944;background:#f6f7f6;border-left:4px solid #9aa59f;padding:10px 13px;border-radius:8px;margin-top:10px}
+.basmala{font-family:Amiri;font-size:34px;line-height:2;text-align:center;color:#8a6518;background:#fffaf0;border:1px solid #ead9ad;border-radius:15px;padding:18px 20px;margin:18px 24px}
+.basmala-wrap{padding:0 24px 10px}
+.audio{border:1px solid #c7ddd5;background:#f1f8f5;border-radius:9px;padding:8px 11px;color:var(--primary);font-weight:600}
+.audio-player{display:block;width:100%;height:38px;margin:10px 0 14px}
 .empty{padding:45px;text-align:center;color:var(--muted)}
+@media(max-width:600px){.ayah{padding:18px 15px 24px}.ayah-ar{font-size:29px}.basmala{margin:14px 15px;font-size:30px}}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2}.surah-list{grid-template-columns:1fr}.nav{flex-wrap:wrap}.search{order:3;flex-basis:100%}}
 </style>
 </head>
@@ -137,69 +142,75 @@ button{cursor:pointer}
   Internet diperlukan untuk memuat teks ayat.
 */
 const surahs = [
-["Al-Fatihah","Pembukaan","الفاتحة",7,1],["Al-Baqarah","Sapi Betina","البقرة",286,2],
-["Ali 'Imran","Keluarga Imran","آل عمران",200,3],["An-Nisa","Wanita","النساء",176,4],
-["Al-Ma'idah","Hidangan","المائدة",120,6],["Al-An'am","Binatang Ternak","الأنعام",165,7],
-["Al-A'raf","Tempat Tertinggi","الأعراف",206,8],["Al-Anfal","Rampasan Perang","الأنفال",75,9],
-["At-Taubah","Pengampunan","التوبة",129,10],["Yunus","Nabi Yunus","يونس",109,11],
-["Hud","Nabi Hud","هود",123,11],["Yusuf","Nabi Yusuf","يوسف",111,12],
-["Ar-Ra'd","Guruh","الرعد",43,13],["Ibrahim","Nabi Ibrahim","إبراهيم",52,13],
-["Al-Hijr","Pegunungan Hijr","الحجر",99,14],["An-Nahl","Lebah","النحل",128,14],
-["Al-Isra","Perjalanan Malam","الإسراء",111,15],["Al-Kahf","Penghuni Gua","الكهف",110,15],
-["Maryam","Maryam","مريم",98,16],["Taha","Taha","طه",135,16],
-["Al-Anbiya","Para Nabi","الأنبياء",112,17],["Al-Hajj","Haji","الحج",78,17],
-["Al-Mu'minun","Orang Mukmin","المؤminون",118,18],["An-Nur","Cahaya","النور",64,18],
-["Al-Furqan","Pembeda","الفرقان",77,18],["Asy-Syu'ara","Para Penyair","الشعراء",227,19],
-["An-Naml","Semut","النمل",93,19],["Al-Qasas","Kisah-Kisah","القصص",88,20],
-["Al-'Ankabut","Laba-Laba","العنكبوت",69,20],["Ar-Rum","Bangsa Romawi","الروم",60,21],
-["Luqman","Luqman","لقمان",34,21],["As-Sajdah","Sajdah","السجدة",30,21],
-["Al-Ahzab","Golongan Yang Bersekutu","الأحزاب",73,21],["Saba'","Kaum Saba'","سبأ",54,22],
-["Fatir","Pencipta","فاطر",45,22],["Yasin","Yasin","يس",83,23],
-["As-Saffat","Barisan-Barisan","الصافات",182,23],["Sad","Sad","ص",88,23],
-["Az-Zumar","Rombongan","الزمر",75,24],["Ghafir","Yang Mengampuni","غافر",85,24],
-["Fussilat","Yang Dijelaskan","فصلت",54,24],["Asy-Syura","Musyawarah","الشورى",53,25],
-["Az-Zukhruf","Perhiasan","الزخرف",89,25],["Ad-Dukhan","Kabut","الدخان",59,25],
-["Al-Jasiyah","Yang Berlutut","الجاثية",37,25],["Al-Ahqaf","Bukit Pasir","الأحقاف",35,26],
-["Muhammad","Nabi Muhammad","محمد",38,26],["Al-Fath","Kemenangan","الفتح",29,26],
-["Al-Hujurat","Kamar-Kamar","الحجرات",18,26],["Qaf","Qaf","ق",45,26],
-["Adz-Dzariyat","Angin Yang Menerbangkan","الذاريات",60,27],["At-Tur","Bukit","الطور",49,27],
-["An-Najm","Bintang","النجم",62,27],["Al-Qamar","Bulan","القمر",55,27],
-["Ar-Rahman","Yang Maha Pemurah","الرحمن",78,27],["Al-Waqi'ah","Hari Kiamat","الواقعة",96,27],
-["Al-Hadid","Besi","الحديد",29,27],["Al-Mujadilah","Wanita Yang Mengajukan Gugatan","المجادلة",22,28],
-["Al-Hasyr","Pengusiran","الحشر",24,28],["Al-Mumtahanah","Wanita Yang Diuji","الممتحنة",13,28],
-["As-Saff","Barisan","الصف",14,28],["Al-Jumu'ah","Hari Jumat","الجمعة",11,28],
-["Al-Munafiqun","Orang Munafik","المنافقون",11,28],["At-Taghabun","Hari Dinampakkan Kesalahan","التغابن",18,28],
-["At-Talaq","Talak","الطلاق",12,28],["At-Tahrim","Pengharaman","التحريم",12,28],
-["Al-Mulk","Kerajaan","الملك",30,29],["Al-Qalam","Pena","القلم",52,29],
-["Al-Haqqah","Hari Kiamat","الحاقة",52,29],["Al-Ma'arij","Tempat-Tempat Naik","المعارج",44,29],
-["Nuh","Nabi Nuh","نوح",28,29],["Al-Jinn","Jin","الجن",28,29],
-["Al-Muzzammil","Orang Yang Berselimut","المزمل",20,29],["Al-Muddassir","Orang Yang Berkemul","المدثر",56,29],
-["Al-Qiyamah","Kiamat","القيامة",40,29],["Al-Insan","Manusia","الإنسان",31,29],
-["Al-Mursalat","Malaikat Yang Diutus","المرسلات",50,29],["An-Naba'","Berita Besar","النبأ",40,30],
-["An-Nazi'at","Malaikat Yang Mencabut","النازعات",46,30],["Abasa","Ia Bermuka Masam","عبس",42,30],
-["At-Takwir","Menggulung","التكوير",29,30],["Al-Infitar","Terbelah","الانفطار",19,30],
-["Al-Mutaffifin","Orang Yang Curang","المطففين",36,30],["Al-Insyiqaq","Terbelah","الانشقاق",25,30],
-["Al-Buruj","Gugusan Bintang","البروج",22,30],["At-Tariq","Yang Datang Di Malam Hari","الطارق",17,30],
-["Al-A'la","Yang Paling Tinggi","الأعلى",19,30],["Al-Ghasyiyah","Hari Pembalasan","الغاشية",26,30],
-["Al-Fajr","Fajar","الفجر",30,30],["Al-Balad","Negeri","البلد",20,30],
-["Asy-Syams","Matahari","الشمس",15,30],["Al-Lail","Malam","الليل",21,30],
-["Ad-Duha","Waktu Duha","الضحى",11,30],["Asy-Syarh","Melapangkan","الشرح",8,30],
-["At-Tin","Buah Tin","التين",8,30],["Al-'Alaq","Segumpal Darah","العلق",19,30],
-["Al-Qadr","Kemuliaan","القدر",5,30],["Al-Bayyinah","Bukti Nyata","البينة",8,30],
-["Az-Zalzalah","Kegoncangan","الزلزلة",8,30],["Al-'Adiyat","Kuda Perang","العاديات",11,30],
-["Al-Qari'ah","Hari Kiamat","القارعة",11,30],["At-Takatsur","Bermegah-Megahan","التكاثر",8,30],
-["Al-'Asr","Masa","العصر",3,30],["Al-Humazah","Pengumpat","الهمزة",9,30],
-["Al-Fil","Gajah","الفيل",5,30],["Quraisy","Suku Quraisy","قريش",4,30],
-["Al-Ma'un","Barang Yang Berguna","الماعون",7,30],["Al-Kautsar","Nikmat Yang Banyak","الكوثر",3,30],
-["Al-Kafirun","Orang Kafir","الكافرون",6,30],["An-Nasr","Pertolongan","النصر",3,30],
-["Al-Lahab","Gejolak Api","المسد",5,30],["Al-Ikhlas","Ikhlas","الإخلاص",4,30],
-["Al-Falaq","Waktu Subuh","الفلق",5,30],["An-Nas","Manusia","الناس",6,30]
+["Al-Fatihah","Pembukaan","الفاتحة",7,1,1],["Al-Baqarah","Sapi Betina","البقرة",286,1,3],
+["Ali 'Imran","Keluarga Imran","آل عمران",200,3,4],["An-Nisa","Wanita","النساء",176,4,6],
+["Al-Ma'idah","Hidangan","المائدة",120,6,7],["Al-An'am","Binatang Ternak","الأنعام",165,7,8],
+["Al-A'raf","Tempat Tertinggi","الأعراف",206,8,9],["Al-Anfal","Rampasan Perang","الأنفال",75,9,10],
+["At-Taubah","Pengampunan","التوبة",129,10,11],["Yunus","Nabi Yunus","يونس",109,11,11],
+["Hud","Nabi Hud","هود",123,11,12],["Yusuf","Nabi Yusuf","يوسف",111,12,13],
+["Ar-Ra'd","Guruh","الرعد",43,13,13],["Ibrahim","Nabi Ibrahim","إبراهيم",52,13,13],
+["Al-Hijr","Pegunungan Hijr","الحجر",99,14,14],["An-Nahl","Lebah","النحل",128,14,14],
+["Al-Isra","Perjalanan Malam","الإسراء",111,15,15],["Al-Kahf","Penghuni Gua","الكهف",110,15,16],
+["Maryam","Maryam","مريم",98,16,16],["Taha","Taha","طه",135,16,16],
+["Al-Anbiya","Para Nabi","الأنبياء",112,17,17],["Al-Hajj","Haji","الحج",78,17,17],
+["Al-Mu'minun","Orang Mukmin","المؤminون",118,18,18],["An-Nur","Cahaya","النور",64,18,18],
+["Al-Furqan","Pembeda","الفرقان",77,18,19],["Asy-Syu'ara","Para Penyair","الشعراء",227,19,19],
+["An-Naml","Semut","النمل",93,19,20],["Al-Qasas","Kisah-Kisah","القصص",88,20,20],
+["Al-'Ankabut","Laba-Laba","العنكبوت",69,20,21],["Ar-Rum","Bangsa Romawi","الروم",60,21,21],
+["Luqman","Luqman","لقمان",34,21,21],["As-Sajdah","Sajdah","السجدة",30,21,21],
+["Al-Ahzab","Golongan Yang Bersekutu","الأحزاب",73,21,22],["Saba'","Kaum Saba'","سبأ",54,22,22],
+["Fatir","Pencipta","فاطر",45,22,22],["Yasin","Yasin","يس",83,22,23],
+["As-Saffat","Barisan-Barisan","الصافات",182,23,23],["Sad","Sad","ص",88,23,23],
+["Az-Zumar","Rombongan","الزمر",75,23,24],["Ghafir","Yang Mengampuni","غافر",85,24,24],
+["Fussilat","Yang Dijelaskan","فصلت",54,24,25],["Asy-Syura","Musyawarah","الشورى",53,25,25],
+["Az-Zukhruf","Perhiasan","الزخرف",89,25,25],["Ad-Dukhan","Kabut","الدخان",59,25,25],
+["Al-Jasiyah","Yang Berlutut","الجاثية",37,25,25],["Al-Ahqaf","Bukit Pasir","الأحقاف",35,26,26],
+["Muhammad","Nabi Muhammad","محمد",38,26,26],["Al-Fath","Kemenangan","الفتح",29,26,26],
+["Al-Hujurat","Kamar-Kamar","الحجرات",18,26,26],["Qaf","Qaf","ق",45,26,26],
+["Adz-Dzariyat","Angin Yang Menerbangkan","الذاريات",60,26,27],["At-Tur","Bukit","الطور",49,27,27],
+["An-Najm","Bintang","النجم",62,27,27],["Al-Qamar","Bulan","القمر",55,27,27],
+["Ar-Rahman","Yang Maha Pemurah","الرحمن",78,27,27],["Al-Waqi'ah","Hari Kiamat","الواقعة",96,27,27],
+["Al-Hadid","Besi","الحديد",29,27,27],["Al-Mujadilah","Wanita Yang Mengajukan Gugatan","المجادلة",22,28,28],
+["Al-Hasyr","Pengusiran","الحشر",24,28,28],["Al-Mumtahanah","Wanita Yang Diuji","الممتحنة",13,28,28],
+["As-Saff","Barisan","الصف",14,28,28],["Al-Jumu'ah","Hari Jumat","الجمعة",11,28,28],
+["Al-Munafiqun","Orang Munafik","المنافقون",11,28,28],["At-Taghabun","Hari Dinampakkan Kesalahan","التغابن",18,28,28],
+["At-Talaq","Talak","الطلاق",12,28,28],["At-Tahrim","Pengharaman","التحريم",12,28,28],
+["Al-Mulk","Kerajaan","الملك",30,29,29],["Al-Qalam","Pena","القلم",52,29,29],
+["Al-Haqqah","Hari Kiamat","الحاقة",52,29,29],["Al-Ma'arij","Tempat-Tempat Naik","المعارج",44,29,29],
+["Nuh","Nabi Nuh","نوح",28,29,29],["Al-Jinn","Jin","الجن",28,29,29],
+["Al-Muzzammil","Orang Yang Berselimut","المزمل",20,29,29],["Al-Muddassir","Orang Yang Berkemul","المدثر",56,29,29],
+["Al-Qiyamah","Kiamat","القيامة",40,29,29],["Al-Insan","Manusia","الإنسان",31,29,29],
+["Al-Mursalat","Malaikat Yang Diutus","المرسلات",50,29,29],["An-Naba'","Berita Besar","النبأ",40,30,30],
+["An-Nazi'at","Malaikat Yang Mencabut","النازعات",46,30,30],["Abasa","Ia Bermuka Masam","عبس",42,30,30],
+["At-Takwir","Menggulung","التكوير",29,30,30],["Al-Infitar","Terbelah","الانفطار",19,30,30],
+["Al-Mutaffifin","Orang Yang Curang","المطففين",36,30,30],["Al-Insyiqaq","Terbelah","الانشقاق",25,30,30],
+["Al-Buruj","Gugusan Bintang","البروج",22,30,30],["At-Tariq","Yang Datang Di Malam Hari","الطارق",17,30,30],
+["Al-A'la","Yang Paling Tinggi","الأعلى",19,30,30],["Al-Ghasyiyah","Hari Pembalasan","الغاشية",26,30,30],
+["Al-Fajr","Fajar","الفجر",30,30,30],["Al-Balad","Negeri","البلد",20,30,30],
+["Asy-Syams","Matahari","الشمس",15,30,30],["Al-Lail","Malam","الليل",21,30,30],
+["Ad-Duha","Waktu Duha","الضحى",11,30,30],["Asy-Syarh","Melapangkan","الشرح",8,30,30],
+["At-Tin","Buah Tin","التين",8,30,30],["Al-'Alaq","Segumpal Darah","العلق",19,30,30],
+["Al-Qadr","Kemuliaan","القدر",5,30,30],["Al-Bayyinah","Bukti Nyata","البينة",8,30,30],
+["Az-Zalzalah","Kegoncangan","الزلزلة",8,30,30],["Al-'Adiyat","Kuda Perang","العاديات",11,30,30],
+["Al-Qari'ah","Hari Kiamat","القارعة",11,30,30],["At-Takatsur","Bermegah-Megahan","التكاثر",8,30,30],
+["Al-'Asr","Masa","العصر",3,30,30],["Al-Humazah","Pengumpat","الهمزة",9,30,30],
+["Al-Fil","Gajah","الفيل",5,30,30],["Quraisy","Suku Quraisy","قريش",4,30,30],
+["Al-Ma'un","Barang Yang Berguna","الماعون",7,30,30],["Al-Kautsar","Nikmat Yang Banyak","الكوثر",3,30,30],
+["Al-Kafirun","Orang Kafir","الكافرون",6,30,30],["An-Nasr","Pertolongan","النصر",3,30,30],
+["Al-Lahab","Gejolak Api","المسد",5,30,30],["Al-Ikhlas","Ikhlas","الإخلاص",4,30,30],
+["Al-Falaq","Waktu Subuh","الفلق",5,30,30],["An-Nas","Manusia","الناس",6,30,30]
 ];
+
+// Browser punya "auto scroll restoration" bawaan saat tombol back ditekan,
+// dan ini suka bentrok / menimpa restore scroll manual kita (jadi malah
+// balik ke posisi paling atas). Matikan supaya sepenuhnya kita yang atur.
+if("scrollRestoration" in history){ history.scrollRestoration = "manual"; }
 
 let bookmarks = JSON.parse(localStorage.getItem("quranBookmarks") || "[]");
 let currentJuz = "all";
 let currentFilter = "all";
 let currentSurah = null;
+let previousScrollY = 0;
 
 const list = document.getElementById("surahList");
 const empty = document.getElementById("empty");
@@ -207,19 +218,51 @@ const search = document.getElementById("search");
 
 function saveBookmarks(){localStorage.setItem("quranBookmarks",JSON.stringify(bookmarks));renderSaved();}
 
+// Banyak surat (mis. Al-Baqarah) beririsan di lebih dari satu juz, jadi
+// tiap surat sekarang nyimpen juzStart & juzEnd (s[4], s[5]), bukan cuma
+// satu angka. Fungsi ini yang bikin tampilannya jadi "Juz 1" atau "Juz 1-3".
+function juzLabel(s){
+  return s[4]===s[5] ? `${s[4]}` : `${s[4]}-${s[5]}`;
+}
+
+// Normalisasi teks buat pencarian: huruf kecil, buang tanda baca/spasi/
+// apostrof/strip, buang diakritik Latin & Arab. Jadi "Al-Fatihah",
+// "alfatihah", "Al Fatihah" semua dianggap sama.
+function normalizeSearchText(s){
+  return String(s).toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,"")
+    .replace(/[^a-z0-9\u0600-\u06FF]/g,"");
+}
+// Fuzzy match ringan: cocok kalau jadi substring setelah dinormalisasi,
+// atau kalau tiap huruf query muncul berurutan di teks target (subsequence)
+// — jadi typo/singkatan kecil tetap ketemu, tidak harus sama persis.
+function fuzzyMatch(query, target){
+  const nq=normalizeSearchText(query);
+  if(!nq) return true;
+  const nt=normalizeSearchText(target);
+  if(nt.includes(nq)) return true;
+  let qi=0;
+  for(let i=0;i<nt.length && qi<nq.length;i++){
+    if(nt[i]===nq[qi]) qi++;
+  }
+  return qi===nq.length;
+}
+
 function renderList(){
-  const q=search.value.trim().toLowerCase();
+  const q=search.value.trim();
   const filtered=surahs.map((s,i)=>({...s,i})).filter(s=>{
-    const matchJuz=currentJuz==="all" || s[4]===Number(currentJuz);
+    const matchJuz=currentJuz==="all" || (Number(currentJuz)>=s[4] && Number(currentJuz)<=s[5]);
     const matchSaved=currentFilter==="all" || bookmarks.includes(s.i);
-    const matchSearch=!q || s[0].toLowerCase().includes(q) || s[1].toLowerCase().includes(q) || s[2].includes(q);
+    const matchSearch=!q || fuzzyMatch(q,s[0]) || fuzzyMatch(q,s[1]) || fuzzyMatch(q,s[2]);
     return matchJuz&&matchSaved&&matchSearch;
   });
   list.innerHTML="";
   filtered.forEach(s=>{
     const el=document.createElement("div");el.className="surah";
     el.innerHTML=`<div class="surah-num">${s.i+1}</div>
-      <div class="surah-info"><div class="surah-name">${s[0]}</div><div class="surah-meta">${s[1]} · ${s[3]} ayat · Juz ${s[4]}</div></div>
+      <div class="surah-info"><div class="surah-name">${s[0]}</div><div class="surah-meta">${s[1]} · ${s[3]} ayat · Juz ${juzLabel(s)}</div></div>
       <div class="arabic-name">${s[2]}</div>
       <button class="bookmark ${bookmarks.includes(s.i)?"saved":""}" title="Bookmark">${bookmarks.includes(s.i)?"★":"☆"}</button>`;
     el.addEventListener("click",e=>{if(e.target.closest(".bookmark")) return;openSurah(s.i)});
@@ -251,28 +294,136 @@ function renderJuz(){
     currentFilter="all";document.querySelectorAll(".filters button").forEach(x=>x.classList.toggle("active",x.dataset.filter==="all"));renderList();
   });
 }
-async function openSurah(i){
-  currentSurah=i;const s=surahs[i];
+
+// --- Perbaikan: deteksi & pembersihan bismillah yang lebih andal ---
+// API Al-Qur'an kadang menuliskan basmalah di awal ayat pertama dengan
+// harakat/format yang sedikit berbeda dari string basmalah statis kita,
+// sehingga regex lama gagal cocok dan basmalah tampil dua kali
+// (satu dari div terpisah, satu lagi masih menempel di teks ayat).
+// Regex baru ini mengizinkan tanda diakritik apa pun di antara setiap
+// huruf dasar, jadi tetap cocok walau harakatnya sedikit berbeda.
+const ARABIC_DIACRITICS = "[\\u0610-\\u061A\\u064B-\\u065F\\u0670\\u06D6-\\u06ED\\u08D4-\\u08E1\\u08E3-\\u08FF]*";
+// Alif punya banyak bentuk (ا أ إ آ ٱ) — teks Uthmani sering pakai alif
+// wasla (ٱ) padahal string basmalah statis kita pakai alif biasa (ا),
+// jadi keduanya harus dianggap sama saat mencocokkan.
+const ALIF_CLASS = "[اأإآٱ]";
+function buildBismillahRegex(){
+  const base = "بسم الله الرحمن الرحيم";
+  let pattern = "^";
+  for(const ch of base){
+    if(ch === " "){
+      pattern += "\\s+";
+    } else if(ch === "ا"){
+      pattern += ALIF_CLASS + ARABIC_DIACRITICS;
+    } else {
+      pattern += ch.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + ARABIC_DIACRITICS;
+    }
+  }
+  pattern += "[\\sۖۗۚۛ,،]*";
+  return new RegExp(pattern);
+}
+const BISMILLAH_REGEX = buildBismillahRegex();
+
+async function openSurah(i, fromPopState=false){
+  currentSurah=i;
+  const s=surahs[i];
+
+  window.quranScrollY = window.scrollY;
+  localStorage.setItem("lastSurah", i);
+
+  if(!fromPopState){
+    history.pushState({quranReader:true, surah:i}, "", "#surah-"+(i+1));
+  }
+
   document.getElementById("listCard").style.display="none";
   document.getElementById("reader").classList.add("show");
   document.getElementById("readerTitle").textContent=`${s[0]} — ${s[2]}`;
-  document.getElementById("readerSub").textContent=`Surat ke-${i+1} · ${s[3]} ayat · Juz ${s[4]}`;
+  document.getElementById("readerSub").textContent=`Surat ke-${i+1} · ${s[3]} ayat · Juz ${juzLabel(s)}`;
+
+  // Setiap buka surat (baik dari daftar maupun dari dalam reader),
+  // mulai dari ATAS surat itu — jangan kebawa posisi scroll sebelumnya.
+  const scrollTop=()=>window.scrollTo(0,0);
+  scrollTop();
+  requestAnimationFrame(()=>requestAnimationFrame(scrollTop));
+  setTimeout(scrollTop,50);
+
   const box=document.getElementById("ayahList");
-  box.innerHTML='<div class="empty">Memuat ayat…</div>';
+  box.innerHTML='<div class="empty">Memuat Arab, Latin, terjemahan, dan audio…</div>';
+
   try{
-    const r=await fetch(`https://api.alquran.cloud/v1/surah/${i+1}/editions/quran-uthmani,id.indonesian`);
-    if(!r.ok)throw new Error();
-    const data=await r.json(), ar=data.data[0].ayahs, id=data.data[1].ayahs;
+    const r=await fetch(`https://api.alquran.cloud/v1/surah/${i+1}/editions/quran-uthmani,en.transliteration,id.indonesian`);
+    if(!r.ok) throw new Error("API gagal");
+    const data=await r.json();
+    const editions=data.data || [];
+    const ar=(editions.find(x=>x.edition?.identifier==="quran-uthmani")||editions[0])?.ayahs || [];
+    const latin=(editions.find(x=>x.edition?.identifier==="en.transliteration")||{ayahs:[]}).ayahs || [];
+    const id=(editions.find(x=>x.edition?.identifier==="id.indonesian")||{ayahs:[]}).ayahs || [];
+
     box.innerHTML="";
+
+    // At-Taubah (indeks 8) tidak diawali basmalah.
+    // Al-Fatihah (indeks 0) tetap dapat basmalah "hiasan" di atas,
+    // TAPI ayat pertamanya sendiri memang berbunyi basmalah — jadi
+    // teks ayat 1 tidak boleh dipotong (lihat kondisi di bawah).
+    if(i !== 8){
+      const b=document.createElement("div");
+      b.className="basmala";
+      b.textContent="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ";
+      box.appendChild(b);
+    }
+
     ar.forEach((a,k)=>{
-      const d=document.createElement("div");d.className="ayah";
-      d.innerHTML=`<div class="ayah-top"><span class="ayah-num">Ayat ${a.numberInSurah}</span><button class="audio" onclick="speak(${JSON.stringify(a.text).replaceAll("'","&#39;")})">🔊</button></div>
-      <div class="ayah-ar">${a.text}</div><div class="ayah-id">${id[k]?.text||""}</div>`;
+      let arab=a.text || "";
+      // Hanya buang basmalah yang "menempel" di teks ayat pertama untuk
+      // surat selain At-Taubah (i=8) DAN selain Al-Fatihah (i=0), karena
+      // di Al-Fatihah ayat 1 memang basmalah itu sendiri.
+      if(k===0 && i!==8 && i!==0){
+        arab=arab.replace(BISMILLAH_REGEX,"").trim();
+      }
+
+      const d=document.createElement("div");
+      d.className="ayah";
+      const latinText=latin[k]?.text || "Transliterasi Latin tidak tersedia untuk ayat ini.";
+      const idText=id[k]?.text || "Terjemahan Indonesia tidak tersedia untuk ayat ini.";
+
+      d.innerHTML=`
+        <div class="ayah-top">
+          <span class="ayah-num">Ayat ${a.numberInSurah}</span>
+          <button class="audio" type="button" title="Putar audio">🔊 Putar</button>
+        </div>
+        <div class="ayah-ar" dir="rtl">${escapeHtml(arab)}</div>
+        <div class="ayah-latin">${escapeHtml(latinText)}</div>
+        <div class="ayah-id">${escapeHtml(idText)}</div>
+      `;
+
+      const audioBtn=d.querySelector(".audio");
+      audioBtn.onclick=()=>{
+        const old=d.querySelector(".audio-player");
+        if(old){ old.pause(); old.remove(); audioBtn.textContent="🔊 Putar"; return; }
+        const audio=document.createElement("audio");
+        audio.className="audio-player";
+        audio.controls=true;
+        audio.preload="none";
+        audio.src=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${a.number}.mp3`;
+        d.insertBefore(audio, d.querySelector(".ayah-ar"));
+        audio.play().catch(()=>{ audioBtn.textContent="▶ Tekan audio di bawah"; });
+        audio.onended=()=>audioBtn.textContent="🔊 Putar";
+        audioBtn.textContent="⏸ Berhenti";
+      };
+
       box.appendChild(d);
     });
-  }catch(e){box.innerHTML='<div class="empty">Gagal memuat ayat. Pastikan koneksi internet aktif lalu coba lagi.</div>'}
+  }catch(e){
+    console.error(e);
+    box.innerHTML='<div class="empty">Gagal memuat data. Pastikan internet aktif, lalu coba buka surat lagi.</div>';
+  }
 }
-function speak(text){if("speechSynthesis" in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="ar-SA";speechSynthesis.speak(u)}}
+
+function escapeHtml(text){
+  return String(text).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
 
 search.addEventListener("input",renderList);
 document.querySelectorAll(".filters button").forEach(b=>b.onclick=()=>{
@@ -283,10 +434,37 @@ document.getElementById("bookmarkBtn").onclick=()=>{
   document.getElementById("listCard").scrollIntoView({behavior:"smooth"});
 };
 document.getElementById("closeReader").onclick=()=>{
-  document.getElementById("reader").classList.remove("show");document.getElementById("listCard").style.display="block";
+  if(location.hash.startsWith("#surah-")) history.back();
+  else closeReaderAndRestore();
 };
+
+function closeReaderAndRestore(){
+  document.getElementById("reader").classList.remove("show");
+  document.getElementById("listCard").style.display="block";
+  const y=Number(window.quranScrollY ?? localStorage.getItem("quranScrollY") ?? 0);
+  const doScroll=()=>window.scrollTo(0,y);
+  // rAF ganda + setTimeout cadangan: memastikan scroll di-set SETELAH
+  // browser selesai layout ulang daftar surat, dan setelah kemungkinan
+  // auto-scroll-restoration browser sendiri selesai bekerja.
+  requestAnimationFrame(()=>requestAnimationFrame(doScroll));
+  setTimeout(doScroll,50);
+  setTimeout(doScroll,150);
+}
+
+window.addEventListener("popstate",()=>{
+  if(document.getElementById("reader").classList.contains("show")){
+    closeReaderAndRestore();
+  }
+});
+
+window.addEventListener("scroll",()=>{
+  if(document.getElementById("listCard").style.display!=="none"){
+    window.quranScrollY=window.scrollY;
+    localStorage.setItem("quranScrollY",window.scrollY);
+  }
+},{passive:true});
 document.getElementById("continueBtn").onclick=()=>openSurah(Number(localStorage.getItem("lastSurah")||113));
-window.addEventListener("beforeunload",()=>{if(currentSurah!==null)localStorage.setItem("lastSurah",currentSurah)});
+// Posisi scroll disimpan selama pengguna berada di daftar surat.
 renderJuz();renderList();renderSaved();
 </script>
 </body>
