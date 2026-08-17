@@ -11,9 +11,29 @@
   --bg:#f5f7f3;--card:#fff;--text:#17231d;--muted:#718078;
   --primary:#17745a;--primary2:#0f5b47;--line:#e1e8e3;--gold:#c89b3c;
   --shadow:0 10px 35px rgba(19,50,39,.08);
+  --hero-grad:linear-gradient(135deg,#125e4b,#238267);
+}
+/* --- Tema latar aplikasi, dipilih lewat panel pengaturan --- */
+body[data-theme="malam"]{
+  --bg:#0f1613;--card:#182420;--text:#e6ede9;--muted:#8aa198;
+  --primary:#3fcf9e;--primary2:#2fa682;--line:#28372f;--gold:#e0b565;
+  --shadow:0 10px 35px rgba(0,0,0,.35);
+  --hero-grad:linear-gradient(135deg,#0d3a2e,#175945);
+}
+body[data-theme="sepia"]{
+  --bg:#f6efe0;--card:#fffaf0;--text:#3a2e1f;--muted:#8a7458;
+  --primary:#8a6518;--primary2:#6e4f10;--line:#e6d9bd;--gold:#b6841f;
+  --shadow:0 10px 35px rgba(90,66,20,.1);
+  --hero-grad:linear-gradient(135deg,#6e4f10,#a97d24);
+}
+body[data-theme="biru"]{
+  --bg:#eef3fa;--card:#fff;--text:#122234;--muted:#5a7186;
+  --primary:#1c5fa8;--primary2:#154880;--line:#dbe6f2;--gold:#c89b3c;
+  --shadow:0 10px 35px rgba(15,55,95,.1);
+  --hero-grad:linear-gradient(135deg,#123b66,#1c5fa8);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;transition:background .25s,color .25s}
 button,input,select{font:inherit}
 button{cursor:pointer}
 .app{min-height:100vh}
@@ -25,9 +45,40 @@ button{cursor:pointer}
 .search input{width:100%;border:1px solid var(--line);background:#f7faf8;border-radius:14px;padding:12px 15px 12px 43px;outline:none;color:var(--text)}
 .search input:focus{border-color:#9bc8ba;box-shadow:0 0 0 4px rgba(23,116,90,.08)}
 .search span{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.nav-btn{border:1px solid var(--line);background:white;border-radius:12px;padding:10px 12px;color:var(--text)}
+.nav-btn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;color:var(--text)}
+
+/* --- Saran pencarian ala Google --- */
+.suggestions{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;z-index:30;display:none;text-align:left}
+.suggestions.show{display:block}
+.suggestion{display:flex;align-items:center;gap:11px;padding:10px 15px;cursor:pointer;border-bottom:1px solid var(--line)}
+.suggestion:last-child{border-bottom:0}
+.suggestion:hover,.suggestion.hl{background:var(--bg)}
+.suggestion span.ic{color:var(--muted);flex:0 0 auto}
+.suggestion .sname{font-weight:600;font-size:14px}
+.suggestion .smeta{font-size:12px;color:var(--muted);margin-top:1px}
+.suggestion .sarabic{margin-left:auto;font-family:Amiri;font-size:19px;color:var(--primary)}
+
+/* --- Panel pengaturan (tema/latar) --- */
+.settings-wrap{position:relative}
+.settings-panel{position:absolute;right:0;top:calc(100% + 8px);width:220px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px;display:none;z-index:30}
+.settings-panel.show{display:block}
+.settings-panel h3{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:600}
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.theme-opt{border:2px solid var(--line);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card);color:var(--text);font-size:12px}
+.theme-opt.active{border-color:var(--primary)}
+.theme-swatch{width:100%;height:26px;border-radius:7px}
+.sw-default{background:linear-gradient(135deg,#125e4b,#238267)}
+.sw-malam{background:linear-gradient(135deg,#0d3a2e,#175945)}
+.sw-sepia{background:linear-gradient(135deg,#6e4f10,#a97d24)}
+.sw-biru{background:linear-gradient(135deg,#123b66,#1c5fa8)}
+
+/* --- Tombol putar audio penuh satu surat --- */
+.audio-surah{border:1px solid var(--primary);background:var(--primary);color:#fff;border-radius:10px;padding:9px 13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.reader-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.surah-audio-player{display:none;width:100%;height:38px;margin:0 22px 6px}
+.surah-audio-player.show{display:block}
 .hero{max-width:1200px;margin:28px auto 0;padding:0 20px}
-.hero-card{border-radius:25px;padding:30px;background:linear-gradient(135deg,#125e4b,#238267);color:white;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-card{border-radius:25px;padding:30px;background:var(--hero-grad);color:white;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .hero-card:after{content:"۞";position:absolute;right:35px;top:-25px;font-family:Amiri;font-size:180px;opacity:.08}
 .hero h1{margin:0 0 7px;font-family:Amiri;font-size:38px}
 .hero p{margin:0;color:#dcefe9}
@@ -82,8 +133,24 @@ button{cursor:pointer}
 <header class="topbar">
   <div class="nav">
     <div class="brand"><div class="brand-mark">ق</div> Qur'an</div>
-    <div class="search"><span>⌕</span><input id="search" placeholder="Cari surat atau arti surat..." autocomplete="off"></div>
+    <div class="search">
+      <span>⌕</span>
+      <input id="search" placeholder="Cari surat atau arti surat..." autocomplete="off">
+      <div class="suggestions" id="suggestions"></div>
+    </div>
     <button class="nav-btn" id="bookmarkBtn">☆ Tersimpan</button>
+    <div class="settings-wrap">
+      <button class="nav-btn" id="settingsBtn" title="Pengaturan tampilan">⚙ Pengaturan</button>
+      <div class="settings-panel" id="settingsPanel">
+        <h3>Latar aplikasi</h3>
+        <div class="theme-grid" id="themeGrid">
+          <button class="theme-opt" data-theme="default"><span class="theme-swatch sw-default"></span>Default</button>
+          <button class="theme-opt" data-theme="malam"><span class="theme-swatch sw-malam"></span>Malam</button>
+          <button class="theme-opt" data-theme="sepia"><span class="theme-swatch sw-sepia"></span>Sepia</button>
+          <button class="theme-opt" data-theme="biru"><span class="theme-swatch sw-biru"></span>Biru</button>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -115,8 +182,12 @@ button{cursor:pointer}
           <h2 class="reader-title" id="readerTitle"></h2>
           <div class="reader-sub" id="readerSub"></div>
         </div>
-        <button class="nav-btn" id="closeReader">← Kembali</button>
+        <div class="reader-actions">
+          <button class="audio-surah" id="surahAudioBtn" type="button">🔊 Putar Surat</button>
+          <button class="nav-btn" id="closeReader">← Kembali</button>
+        </div>
       </div>
+      <audio class="surah-audio-player" id="surahAudioPlayer" controls preload="none"></audio>
       <div id="ayahList"></div>
     </div>
   </section>
@@ -211,6 +282,15 @@ let currentJuz = "all";
 let currentFilter = "all";
 let currentSurah = null;
 let previousScrollY = 0;
+
+// --- Tema latar aplikasi ---
+function applyTheme(name){
+  if(name==="default"){ document.body.removeAttribute("data-theme"); }
+  else{ document.body.setAttribute("data-theme", name); }
+  localStorage.setItem("quranTheme", name);
+  document.querySelectorAll(".theme-opt").forEach(b=>b.classList.toggle("active", b.dataset.theme===name));
+}
+applyTheme(localStorage.getItem("quranTheme") || "default");
 
 const list = document.getElementById("surahList");
 const empty = document.getElementById("empty");
@@ -340,6 +420,14 @@ async function openSurah(i, fromPopState=false){
   document.getElementById("readerTitle").textContent=`${s[0]} — ${s[2]}`;
   document.getElementById("readerSub").textContent=`Surat ke-${i+1} · ${s[3]} ayat · Juz ${juzLabel(s)}`;
 
+  // Reset player audio-per-surat setiap kali surat (baru) dibuka.
+  const surahPlayer=document.getElementById("surahAudioPlayer");
+  surahPlayer.pause();
+  surahPlayer.removeAttribute("src");
+  surahPlayer.load();
+  surahPlayer.classList.remove("show");
+  document.getElementById("surahAudioBtn").textContent="🔊 Putar Surat";
+
   // Setiap buka surat (baik dari daftar maupun dari dalam reader),
   // mulai dari ATAS surat itu — jangan kebawa posisi scroll sebelumnya.
   const scrollTop=()=>window.scrollTo(0,0);
@@ -425,7 +513,83 @@ function escapeHtml(text){
   }[c]));
 }
 
-search.addEventListener("input",renderList);
+// --- Saran pencarian ala Google, muncul sebagai dropdown di bawah search ---
+const suggestBox = document.getElementById("suggestions");
+let hlIndex = -1;
+
+function renderSuggestions(){
+  const q = search.value.trim();
+  if(!q){ suggestBox.classList.remove("show"); suggestBox.innerHTML=""; hlIndex=-1; return; }
+  const matches = surahs.map((s,i)=>({...s,i}))
+    .filter(s=>fuzzyMatch(q,s[0])||fuzzyMatch(q,s[1])||fuzzyMatch(q,s[2]))
+    .slice(0,7);
+  if(!matches.length){ suggestBox.classList.remove("show"); suggestBox.innerHTML=""; hlIndex=-1; return; }
+  suggestBox.innerHTML = matches.map(s=>`
+    <div class="suggestion" data-i="${s.i}">
+      <span class="ic">⌕</span>
+      <div>
+        <div class="sname">${s[0]}</div>
+        <div class="smeta">${s[1]} · ${s[3]} ayat</div>
+      </div>
+      <span class="sarabic">${s[2]}</span>
+    </div>`).join("");
+  suggestBox.classList.add("show");
+  hlIndex=-1;
+  suggestBox.querySelectorAll(".suggestion").forEach(el=>{
+    el.addEventListener("mousedown",e=>{ // mousedown supaya jalan sebelum blur menutup dropdown
+      e.preventDefault();
+      const idx=Number(el.dataset.i);
+      suggestBox.classList.remove("show");
+      search.value=surahs[idx][0];
+      openSurah(idx);
+    });
+  });
+}
+
+search.addEventListener("input",()=>{ renderList(); renderSuggestions(); });
+search.addEventListener("focus",renderSuggestions);
+search.addEventListener("keydown",e=>{
+  const items=[...suggestBox.querySelectorAll(".suggestion")];
+  if(!suggestBox.classList.contains("show") || !items.length) return;
+  if(e.key==="ArrowDown"){ e.preventDefault(); hlIndex=Math.min(hlIndex+1,items.length-1); items.forEach((el,k)=>el.classList.toggle("hl",k===hlIndex)); }
+  else if(e.key==="ArrowUp"){ e.preventDefault(); hlIndex=Math.max(hlIndex-1,0); items.forEach((el,k)=>el.classList.toggle("hl",k===hlIndex)); }
+  else if(e.key==="Enter"){ if(hlIndex>=0){ e.preventDefault(); items[hlIndex].dispatchEvent(new Event("mousedown")); } }
+  else if(e.key==="Escape"){ suggestBox.classList.remove("show"); }
+});
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".search")) suggestBox.classList.remove("show");
+});
+
+// --- Panel pengaturan tema/latar ---
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsPanel = document.getElementById("settingsPanel");
+settingsBtn.onclick=(e)=>{ e.stopPropagation(); settingsPanel.classList.toggle("show"); };
+document.querySelectorAll(".theme-opt").forEach(b=>b.onclick=()=>{ applyTheme(b.dataset.theme); });
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".settings-wrap")) settingsPanel.classList.remove("show");
+});
+
+// --- Audio penuh satu surat (terpisah dari audio per-ayat) ---
+const surahAudioBtn = document.getElementById("surahAudioBtn");
+const surahAudioPlayer = document.getElementById("surahAudioPlayer");
+surahAudioBtn.onclick=()=>{
+  if(currentSurah===null) return;
+  if(surahAudioPlayer.classList.contains("show") && !surahAudioPlayer.paused){
+    surahAudioPlayer.pause();
+    surahAudioBtn.textContent="🔊 Putar Surat";
+    return;
+  }
+  if(!surahAudioPlayer.src || !surahAudioPlayer.classList.contains("show")){
+    surahAudioPlayer.src=`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${currentSurah+1}.mp3`;
+    surahAudioPlayer.classList.add("show");
+  }
+  surahAudioPlayer.play().catch(()=>{});
+  surahAudioBtn.textContent="⏸ Berhenti";
+};
+surahAudioPlayer.addEventListener("pause",()=>{ surahAudioBtn.textContent="🔊 Putar Surat"; });
+surahAudioPlayer.addEventListener("play",()=>{ surahAudioBtn.textContent="⏸ Berhenti"; });
+surahAudioPlayer.addEventListener("ended",()=>{ surahAudioBtn.textContent="🔊 Putar Surat"; });
+
 document.querySelectorAll(".filters button").forEach(b=>b.onclick=()=>{
   currentFilter=b.dataset.filter;document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderList();
 });
@@ -441,6 +605,8 @@ document.getElementById("closeReader").onclick=()=>{
 function closeReaderAndRestore(){
   document.getElementById("reader").classList.remove("show");
   document.getElementById("listCard").style.display="block";
+  const surahPlayer=document.getElementById("surahAudioPlayer");
+  surahPlayer.pause();
   const y=Number(window.quranScrollY ?? localStorage.getItem("quranScrollY") ?? 0);
   const doScroll=()=>window.scrollTo(0,y);
   // rAF ganda + setTimeout cadangan: memastikan scroll di-set SETELAH
