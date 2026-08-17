@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
-<head><meta name="google-site-verification" content="kUz4KbARrj1ilYzUBtAYJG-eXL6hGIh10_ry7483RcY" />
+<head>
+<meta name="google-site-verification" content="kUz4KbARrj1ilYzUBtAYJG-eXL6hGIh10_ry7483RcY" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Qur'an — Mushaf Digital</title>
+<link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+<link rel="manifest" href="favicon_io/site.webmanifest">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -57,6 +63,9 @@ button{cursor:pointer}
 .suggestion .sname{font-weight:600;font-size:14px}
 .suggestion .smeta{font-size:12px;color:var(--muted);margin-top:1px}
 .suggestion .sarabic{margin-left:auto;font-family:Amiri;font-size:19px;color:var(--primary)}
+.suggestion-google{background:var(--bg)}
+.suggestion-google .ic{font-size:15px}
+.suggestion-google .sname{color:var(--primary)}
 
 /* --- Panel pengaturan (tema/latar) --- */
 .settings-wrap{position:relative}
@@ -522,9 +531,8 @@ function renderSuggestions(){
   if(!q){ suggestBox.classList.remove("show"); suggestBox.innerHTML=""; hlIndex=-1; return; }
   const matches = surahs.map((s,i)=>({...s,i}))
     .filter(s=>fuzzyMatch(q,s[0])||fuzzyMatch(q,s[1])||fuzzyMatch(q,s[2]))
-    .slice(0,7);
-  if(!matches.length){ suggestBox.classList.remove("show"); suggestBox.innerHTML=""; hlIndex=-1; return; }
-  suggestBox.innerHTML = matches.map(s=>`
+    .slice(0,6);
+  let html = matches.map(s=>`
     <div class="suggestion" data-i="${s.i}">
       <span class="ic">⌕</span>
       <div>
@@ -533,9 +541,19 @@ function renderSuggestions(){
       </div>
       <span class="sarabic">${s[2]}</span>
     </div>`).join("");
+  // Baris tambahan: buka pencarian Google beneran (tab baru) untuk istilah yang diketik.
+  html += `
+    <div class="suggestion suggestion-google" id="googleSuggest">
+      <span class="ic">🔍</span>
+      <div>
+        <div class="sname">Cari "${escapeHtml(q)}" di Google</div>
+        <div class="smeta">Buka hasil pencarian Google di tab baru</div>
+      </div>
+    </div>`;
+  suggestBox.innerHTML = html;
   suggestBox.classList.add("show");
   hlIndex=-1;
-  suggestBox.querySelectorAll(".suggestion").forEach(el=>{
+  suggestBox.querySelectorAll(".suggestion[data-i]").forEach(el=>{
     el.addEventListener("mousedown",e=>{ // mousedown supaya jalan sebelum blur menutup dropdown
       e.preventDefault();
       const idx=Number(el.dataset.i);
@@ -544,6 +562,14 @@ function renderSuggestions(){
       openSurah(idx);
     });
   });
+  const googleEl = document.getElementById("googleSuggest");
+  if(googleEl){
+    googleEl.addEventListener("mousedown",e=>{
+      e.preventDefault();
+      suggestBox.classList.remove("show");
+      window.open(`https://www.google.com/search?q=${encodeURIComponent("quran surat "+q)}`,"_blank","noopener");
+    });
+  }
 }
 
 search.addEventListener("input",()=>{ renderList(); renderSuggestions(); });
