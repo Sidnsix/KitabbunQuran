@@ -152,12 +152,22 @@ button{cursor:pointer}
 .reader-head{padding:22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .reader-title{font-family:Amiri;font-size:32px;margin:0}
 .reader-sub{color:var(--muted);font-size:13px}
-.reader-navbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 22px 14px;border-bottom:1px solid var(--line)}
+.reader-navbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 22px;border-bottom:1px solid var(--line);position:sticky;top:var(--topbar-h,64px);z-index:15;background:var(--card);backdrop-filter:blur(10px)}
 .reader-nav-btn{border:1px solid var(--line);background:var(--card);border-radius:11px;padding:9px 13px;color:var(--text);display:flex;align-items:center;gap:7px;font-size:13px;max-width:44%}
 .reader-nav-btn.disabled{opacity:.35;pointer-events:none}
 .reader-nav-btn .rn-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .reader-nav-btn.next{flex-direction:row-reverse;margin-left:auto}
 .reader-nav-hint{font-size:11px;color:var(--muted);text-align:center;flex:0 0 auto}
+.range-bar{position:sticky;top:calc(var(--topbar-h,64px) + var(--navbar-h,54px));z-index:14;background:var(--card);border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.range-bar .rb-label{font-size:12.5px;color:var(--muted);font-weight:600;flex:0 0 auto}
+.range-bar input[type=number]{width:56px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:8px;padding:6px 7px;text-align:center}
+.range-bar .rb-sep{color:var(--muted);font-size:12px}
+.range-btn{border:1px solid var(--primary);background:transparent;color:var(--primary);border-radius:9px;padding:8px 12px;font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:6px;margin-left:auto}
+.range-btn.on{background:var(--primary);color:#fff}
+.range-status{font-size:11.5px;color:var(--gold);font-weight:700;flex:0 0 100%}
+.range-status.show{display:block}
+.range-status:not(.show){display:none}
+.ayah.playing{background:rgba(200,155,60,.09);box-shadow:inset 3px 0 0 var(--gold)}
 .ayah{padding:22px 24px 28px;border-top:1px solid var(--line)}
 .ayah-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .ayah-num{color:var(--primary);font-weight:700;font-size:13px}
@@ -177,7 +187,14 @@ button{cursor:pointer}
 .empty{padding:45px;text-align:center;color:var(--muted)}
 .swipe-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:0 8px 25px rgba(0,0,0,.25)}
 .swipe-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(max-width:600px){.ayah{padding:18px 15px 24px}.ayah-ar{font-size:calc(var(--arabic-size) - 5px)}.basmala{margin:14px 15px;font-size:30px}.reader-nav-btn{max-width:47%}.reader-nav-btn .rn-name{max-width:80px}}
+@media(max-width:600px){.ayah{padding:18px 15px 24px}.ayah-ar{font-size:calc(var(--arabic-size) - 5px)}.basmala{margin:14px 15px;font-size:30px}.reader-nav-btn{max-width:47%}.reader-nav-btn .rn-name{max-width:80px}
+  /* Panel pengaturan sering kepotong di layar HP kalau posisinya nempel
+     tombol ⚙ (bisa kepotong tepi kanan/bawah). Di layar sempit, jadikan
+     ia "bottom sheet" mengambang yang selalu utuh & bisa discroll sendiri. */
+  .settings-panel{position:fixed;left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:75vh;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+  .range-bar{padding:10px 15px}
+  .range-btn{margin-left:0;flex:0 0 auto}
+}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2}.surah-list{grid-template-columns:1fr}.nav{flex-wrap:wrap}.search{order:3;flex-basis:100%}}
 </style>
 </head>
@@ -293,6 +310,14 @@ button{cursor:pointer}
         <button class="reader-nav-btn next" id="nextSurahBtn"><span>▶</span><span class="rn-name" id="nextSurahName"></span></button>
       </div>
       <audio class="surah-audio-player" id="surahAudioPlayer" controls preload="none"></audio>
+      <div class="range-bar" id="rangeBar">
+        <span class="rb-label">🔁 Loop rentang ayat</span>
+        <input type="number" id="rangeFrom" min="1" value="1">
+        <span class="rb-sep">–</span>
+        <input type="number" id="rangeTo" min="1" value="1">
+        <button class="range-btn" id="rangeBtn" type="button">▶ Putar</button>
+        <span class="range-status" id="rangeStatus"></span>
+      </div>
       <div id="ayahList"></div>
     </div>
   </section>
@@ -389,6 +414,9 @@ let currentJuz = "all";
 let currentFilter = "all";
 let currentSurah = null;
 let previousScrollY = 0;
+let currentAyahNumbers = []; // nomor ayat global (untuk audio) dari surat yang sedang dibuka
+let rangeAudio = null;
+let rangeState = { playing:false, from:1, to:1, current:1 };
 
 // --- Preferensi pengaturan baru: navigasi & ukuran huruf & loop default ---
 let prefSwipe = localStorage.getItem("prefSwipe") !== "0"; // default aktif
@@ -549,9 +577,24 @@ function updateReaderNav(){
   }
   hint.textContent = prefSwipe ? "Geser layar untuk pindah surat" : "";
   hint.style.display = prefSwipe ? "block" : "none";
+  requestAnimationFrame(updateStickyOffsets);
 }
 document.getElementById("prevSurahBtn").onclick=()=>{ if(currentSurah>0) openSurah(currentSurah-1); };
 document.getElementById("nextSurahBtn").onclick=()=>{ if(currentSurah<surahs.length-1) openSurah(currentSurah+1); };
+
+// Tombol Sebelumnya/Berikutnya (dan bar loop rentang) dibuat "sticky" agar
+// selalu ikut kelihatan saat digulir ke bawah — jadi pengguna yang tidak
+// mengaktifkan geser tetap gampang pindah surat tanpa harus scroll ke atas.
+// Tinggi topbar & navbar diukur otomatis (bisa beda-beda di tiap layar).
+function updateStickyOffsets(){
+  const topbar=document.querySelector(".topbar");
+  const navbar=document.getElementById("readerNavbar");
+  document.documentElement.style.setProperty("--topbar-h", topbar.offsetHeight+"px");
+  const navH = navbar.style.display==="none" ? 0 : navbar.offsetHeight;
+  document.documentElement.style.setProperty("--navbar-h", navH+"px");
+}
+window.addEventListener("resize",()=>requestAnimationFrame(updateStickyOffsets));
+window.addEventListener("load",updateStickyOffsets);
 
 function showSwipeToast(msg){
   const t=document.getElementById("swipeToast");
@@ -582,6 +625,63 @@ function showSwipeToast(msg){
     }
   },{passive:true});
 })();
+
+// --- Loop rentang ayat: putar beberapa ayat berurutan (mis. ayat 5–10)
+// lalu otomatis mengulang dari awal rentang terus-menerus. Cocok untuk
+// mendengarkan/menghafal satu bagian surat berulang-ulang tanpa harus
+// pencet ulang manual satu-satu. ---
+const rangeFromInput=document.getElementById("rangeFrom");
+const rangeToInput=document.getElementById("rangeTo");
+const rangeBtn=document.getElementById("rangeBtn");
+const rangeStatus=document.getElementById("rangeStatus");
+
+function clampRange(v,min,max){ v=Number(v)||min; return Math.min(Math.max(v,min),max); }
+
+function startRangeLoop(){
+  if(!currentAyahNumbers.length) return;
+  const max=currentAyahNumbers.length;
+  const from=clampRange(rangeFromInput.value,1,max);
+  const to=Math.max(from,clampRange(rangeToInput.value,1,max));
+  rangeFromInput.value=from; rangeToInput.value=to;
+  rangeState={playing:true, from, to, current:from};
+  rangeBtn.textContent="⏹ Berhenti";
+  rangeBtn.classList.add("on");
+  rangeStatus.classList.add("show");
+  // Audio per-ayat manual & audio satu-surat dihentikan dulu supaya tidak tabrakan.
+  document.querySelectorAll(".audio-player").forEach(a=>a.pause());
+  document.getElementById("surahAudioPlayer").pause();
+  playRangeAyah();
+}
+function playRangeAyah(){
+  if(!rangeState.playing) return;
+  const num=currentAyahNumbers[rangeState.current-1];
+  if(!num){ stopRangeLoop(); return; }
+  document.querySelectorAll(".ayah.playing").forEach(el=>el.classList.remove("playing"));
+  const el=document.querySelector(`.ayah[data-ayahnum="${rangeState.current}"]`);
+  if(el){
+    el.classList.add("playing");
+    el.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  rangeStatus.textContent=`Memutar ayat ${rangeState.current} (rentang ${rangeState.from}–${rangeState.to})`;
+  if(!rangeAudio) rangeAudio=new Audio();
+  rangeAudio.src=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${num}.mp3`;
+  rangeAudio.play().catch(()=>{});
+  rangeAudio.onended=()=>{
+    if(!rangeState.playing) return;
+    rangeState.current++;
+    if(rangeState.current>rangeState.to) rangeState.current=rangeState.from; // kembali ke awal rentang → loop
+    playRangeAyah();
+  };
+}
+function stopRangeLoop(){
+  rangeState.playing=false;
+  if(rangeAudio) rangeAudio.pause();
+  document.querySelectorAll(".ayah.playing").forEach(el=>el.classList.remove("playing"));
+  rangeBtn.textContent="▶ Putar";
+  rangeBtn.classList.remove("on");
+  rangeStatus.classList.remove("show");
+}
+rangeBtn.onclick=()=>{ rangeState.playing ? stopRangeLoop() : startRangeLoop(); };
 
 // Panah kiri/kanan keyboard juga bisa dipakai untuk pindah surat saat
 // reader terbuka (memudahkan pengguna desktop / keyboard eksternal).
@@ -646,6 +746,15 @@ async function openSurah(i, fromPopState=false){
   document.getElementById("surahAudioBtn").textContent="🔊 Putar Surat";
   document.getElementById("surahLoopBtn").classList.toggle("on",prefLoopDefault);
 
+  // Setiap ganti surat, hentikan & reset dulu loop-rentang ayat yang
+  // mungkin masih berjalan dari surat sebelumnya.
+  stopRangeLoop();
+  currentAyahNumbers = [];
+  const rangeFromInput=document.getElementById("rangeFrom");
+  const rangeToInput=document.getElementById("rangeTo");
+  rangeFromInput.min=1; rangeFromInput.max=s[3]; rangeFromInput.value=1;
+  rangeToInput.min=1; rangeToInput.max=s[3]; rangeToInput.value=s[3];
+
   // Setiap buka surat (baik dari daftar maupun dari dalam reader),
   // mulai dari ATAS surat itu — jangan kebawa posisi scroll sebelumnya.
   const scrollTop=()=>window.scrollTo(0,0);
@@ -664,6 +773,10 @@ async function openSurah(i, fromPopState=false){
     const ar=(editions.find(x=>x.edition?.identifier==="quran-uthmani")||editions[0])?.ayahs || [];
     const latin=(editions.find(x=>x.edition?.identifier==="en.transliteration")||{ayahs:[]}).ayahs || [];
     const id=(editions.find(x=>x.edition?.identifier==="id.indonesian")||{ayahs:[]}).ayahs || [];
+
+    // Simpan nomor ayat global (dipakai API audio per-ayat) berurutan
+    // sesuai nomor ayat dalam surat — dipakai oleh fitur loop rentang ayat.
+    currentAyahNumbers = ar.map(a=>a.number);
 
     box.innerHTML="";
 
@@ -689,6 +802,7 @@ async function openSurah(i, fromPopState=false){
 
       const d=document.createElement("div");
       d.className="ayah";
+      d.dataset.ayahnum=a.numberInSurah;
       const latinText=latin[k]?.text || "Transliterasi Latin tidak tersedia untuk ayat ini.";
       const idText=id[k]?.text || "Terjemahan Indonesia tidak tersedia untuk ayat ini.";
 
@@ -976,6 +1090,7 @@ function closeReaderAndRestore(){
   document.getElementById("listCard").style.display="block";
   const surahPlayer=document.getElementById("surahAudioPlayer");
   surahPlayer.pause();
+  stopRangeLoop();
   const y=Number(window.quranScrollY ?? localStorage.getItem("quranScrollY") ?? 0);
   const doScroll=()=>window.scrollTo(0,y);
   // rAF ganda + setTimeout cadangan: memastikan scroll di-set SETELAH
