@@ -18,6 +18,7 @@
   --primary:#17745a;--primary2:#0f5b47;--line:#e1e8e3;--gold:#c89b3c;
   --shadow:0 10px 35px rgba(19,50,39,.08);
   --hero-grad:linear-gradient(135deg,#125e4b,#238267);
+  --arabic-size:34px;
 }
 /* --- Tema latar aplikasi, dipilih lewat panel pengaturan --- */
 body[data-theme="malam"]{
@@ -69,11 +70,12 @@ button{cursor:pointer}
 .suggestion-juz{background:#eef5f1}
 .suggestion-juz .sname{color:var(--primary);font-weight:700}
 
-/* --- Panel pengaturan (tema/latar) --- */
+/* --- Panel pengaturan (tema/latar/navigasi/ukuran huruf) --- */
 .settings-wrap{position:relative}
-.settings-panel{position:absolute;right:0;top:calc(100% + 8px);width:220px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px;display:none;z-index:30}
+.settings-panel{position:absolute;right:0;top:calc(100% + 8px);width:250px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px;display:none;z-index:30;max-height:80vh;overflow:auto}
 .settings-panel.show{display:block}
-.settings-panel h3{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:600}
+.settings-panel h3{margin:14px 0 10px;font-size:13px;color:var(--muted);font-weight:600}
+.settings-panel h3:first-child{margin-top:0}
 .theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 .theme-opt{border:2px solid var(--line);border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card);color:var(--text);font-size:12px}
 .theme-opt.active{border-color:var(--primary)}
@@ -82,9 +84,21 @@ button{cursor:pointer}
 .sw-malam{background:linear-gradient(135deg,#0d3a2e,#175945)}
 .sw-sepia{background:linear-gradient(135deg,#6e4f10,#a97d24)}
 .sw-biru{background:linear-gradient(135deg,#123b66,#1c5fa8)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 2px;font-size:13px}
+.switch{position:relative;width:40px;height:23px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0}
+.switch .slider{position:absolute;inset:0;background:var(--line);border-radius:20px;transition:.2s}
+.switch .slider:before{content:"";position:absolute;width:17px;height:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch input:checked + .slider{background:var(--primary)}
+.switch input:checked + .slider:before{transform:translateX(17px)}
+.font-size-row{display:flex;align-items:center;gap:8px}
+.font-size-row input[type=range]{flex:1;accent-color:var(--primary)}
+.font-size-preview{font-family:Amiri;font-size:20px;color:var(--primary);width:28px;text-align:center}
 
 /* --- Tombol putar audio penuh satu surat --- */
 .audio-surah{border:1px solid var(--primary);background:var(--primary);color:#fff;border-radius:10px;padding:9px 13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.loop-btn{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:10px;padding:9px 11px;font-weight:600}
+.loop-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,155,60,.1)}
 .reader-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .surah-audio-player{display:none;width:100%;height:38px;margin:0 22px 6px}
 .surah-audio-player.show{display:block}
@@ -93,7 +107,21 @@ button{cursor:pointer}
 .hero-card:after{content:"۞";position:absolute;right:35px;top:-25px;font-family:Amiri;font-size:180px;opacity:.08}
 .hero h1{margin:0 0 7px;font-family:Amiri;font-size:38px}
 .hero p{margin:0;color:#dcefe9}
-.continue{margin-top:22px;display:inline-flex;align-items:center;gap:10px;background:white;color:var(--primary);border:0;padding:11px 15px;border-radius:12px;font-weight:600}
+.hero-bottom{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:22px;position:relative;z-index:1}
+.continue{display:inline-flex;align-items:center;gap:10px;background:white;color:var(--primary);border:0;padding:11px 15px;border-radius:12px;font-weight:600}
+.streak-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;padding:9px 14px;border-radius:12px;font-size:13px;font-weight:600}
+.streak-chip b{font-size:15px}
+
+/* --- Widget "Ayat Hari Ini" --- */
+.daily-ayah{max-width:1200px;margin:16px auto 0;padding:0 20px}
+.daily-card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px 20px;display:none}
+.daily-card.show{display:block}
+.daily-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.daily-head span{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.daily-ar{font-family:Amiri,serif;font-size:26px;line-height:2;text-align:right;direction:rtl;color:#12664f}
+.daily-id{color:var(--muted);font-size:13.5px;margin-top:8px;line-height:1.7}
+.daily-ref{margin-top:10px;font-size:12.5px;color:var(--primary);font-weight:600;cursor:pointer}
+
 .layout{max-width:1200px;margin:25px auto;padding:0 20px 50px;display:grid;grid-template-columns:1fr 290px;gap:24px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
 .card-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -121,21 +149,35 @@ button{cursor:pointer}
 .saved-item button{border:0;background:transparent;text-align:left;flex:1;color:var(--text)}
 .reader{display:none}
 .reader.show{display:block}
-.reader-head{padding:22px;display:flex;justify-content:space-between;align-items:center}
+.reader-head{padding:22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .reader-title{font-family:Amiri;font-size:32px;margin:0}
 .reader-sub{color:var(--muted);font-size:13px}
+.reader-navbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 22px 14px;border-bottom:1px solid var(--line)}
+.reader-nav-btn{border:1px solid var(--line);background:var(--card);border-radius:11px;padding:9px 13px;color:var(--text);display:flex;align-items:center;gap:7px;font-size:13px;max-width:44%}
+.reader-nav-btn.disabled{opacity:.35;pointer-events:none}
+.reader-nav-btn .rn-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reader-nav-btn.next{flex-direction:row-reverse;margin-left:auto}
+.reader-nav-hint{font-size:11px;color:var(--muted);text-align:center;flex:0 0 auto}
 .ayah{padding:22px 24px 28px;border-top:1px solid var(--line)}
-.ayah-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.ayah-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .ayah-num{color:var(--primary);font-weight:700;font-size:13px}
-.ayah-ar{font-family:Amiri,serif;font-size:34px;line-height:2.15;text-align:right;margin:8px 0 14px;color:#12664f;direction:rtl}
+.ayah-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ayah-ar{font-family:Amiri,serif;font-size:var(--arabic-size);line-height:2.15;text-align:right;margin:8px 0 14px;color:#12664f;direction:rtl}
 .ayah-latin{line-height:1.85;color:#286b9b;background:#f2f8fc;border-left:4px solid #79afd2;padding:10px 13px;border-radius:8px;margin:10px 0;font-family:Georgia,serif;font-style:italic}
 .ayah-id{line-height:1.85;color:#3f4944;background:#f6f7f6;border-left:4px solid #9aa59f;padding:10px 13px;border-radius:8px;margin-top:10px}
 .basmala{font-family:Amiri;font-size:34px;line-height:2;text-align:center;color:#8a6518;background:#fffaf0;border:1px solid #ead9ad;border-radius:15px;padding:18px 20px;margin:18px 24px}
 .basmala-wrap{padding:0 24px 10px}
 .audio{border:1px solid #c7ddd5;background:#f1f8f5;border-radius:9px;padding:8px 11px;color:var(--primary);font-weight:600}
+.repeat-btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 10px;color:var(--muted);font-weight:600;font-size:12px}
+.repeat-select{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 8px;color:var(--text);font-size:12px;display:none}
+.repeat-select.show{display:inline-block}
+.repeat-counter{font-size:12px;color:var(--gold);font-weight:700;display:none}
+.repeat-counter.show{display:inline-block}
 .audio-player{display:block;width:100%;height:38px;margin:10px 0 14px}
 .empty{padding:45px;text-align:center;color:var(--muted)}
-@media(max-width:600px){.ayah{padding:18px 15px 24px}.ayah-ar{font-size:29px}.basmala{margin:14px 15px;font-size:30px}}
+.swipe-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:0 8px 25px rgba(0,0,0,.25)}
+.swipe-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){.ayah{padding:18px 15px 24px}.ayah-ar{font-size:calc(var(--arabic-size) - 5px)}.basmala{margin:14px 15px;font-size:30px}.reader-nav-btn{max-width:47%}.reader-nav-btn .rn-name{max-width:80px}}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2}.surah-list{grid-template-columns:1fr}.nav{flex-wrap:wrap}.search{order:3;flex-basis:100%}}
 </style>
 </head>
@@ -160,6 +202,37 @@ button{cursor:pointer}
           <button class="theme-opt" data-theme="sepia"><span class="theme-swatch sw-sepia"></span>Sepia</button>
           <button class="theme-opt" data-theme="biru"><span class="theme-swatch sw-biru"></span>Biru</button>
         </div>
+
+        <h3>Navigasi antar surat</h3>
+        <div class="settings-row">
+          <span>Geser (swipe) untuk pindah surat</span>
+          <label class="switch">
+            <input type="checkbox" id="swipeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-row">
+          <span>Tombol Sebelumnya / Berikutnya</span>
+          <label class="switch">
+            <input type="checkbox" id="navBtnToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <h3>Ukuran teks Arab</h3>
+        <div class="font-size-row">
+          <input type="range" id="fontSizeSlider" min="24" max="48" step="2">
+          <span class="font-size-preview">أ</span>
+        </div>
+
+        <h3>Audio</h3>
+        <div class="settings-row">
+          <span>Ulang otomatis (loop) secara default</span>
+          <label class="switch">
+            <input type="checkbox" id="loopDefaultToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -169,7 +242,22 @@ button{cursor:pointer}
   <div class="hero-card">
     <h1>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</h1>
     <p>Baca Al-Qur'an dengan tenang, simpan ayat favorit, dan jelajahi surat berdasarkan juz.</p>
-    <button class="continue" id="continueBtn">▶ Lanjut membaca</button>
+    <div class="hero-bottom">
+      <button class="continue" id="continueBtn">▶ Lanjut membaca</button>
+      <div class="streak-chip" id="streakChip" style="display:none">🔥 <span><b id="streakCount">0</b> hari berturut-turut</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="daily-ayah">
+  <div class="daily-card" id="dailyCard">
+    <div class="daily-head">
+      <span>✨ Ayat Pilihan Hari Ini</span>
+      <span id="dailyRefSmall"></span>
+    </div>
+    <div class="daily-ar" id="dailyAr">Memuat…</div>
+    <div class="daily-id" id="dailyId"></div>
+    <div class="daily-ref" id="dailyRef">Baca surat lengkap →</div>
   </div>
 </section>
 
@@ -195,8 +283,14 @@ button{cursor:pointer}
         </div>
         <div class="reader-actions">
           <button class="audio-surah" id="surahAudioBtn" type="button">🔊 Putar Surat</button>
+          <button class="loop-btn" id="surahLoopBtn" type="button" title="Ulang surat ini terus-menerus">🔁</button>
           <button class="nav-btn" id="closeReader">← Kembali</button>
         </div>
+      </div>
+      <div class="reader-navbar" id="readerNavbar">
+        <button class="reader-nav-btn prev" id="prevSurahBtn"><span>◀</span><span class="rn-name" id="prevSurahName"></span></button>
+        <span class="reader-nav-hint" id="readerNavHint">Geser untuk pindah surat</span>
+        <button class="reader-nav-btn next" id="nextSurahBtn"><span>▶</span><span class="rn-name" id="nextSurahName"></span></button>
       </div>
       <audio class="surah-audio-player" id="surahAudioPlayer" controls preload="none"></audio>
       <div id="ayahList"></div>
@@ -215,6 +309,8 @@ button{cursor:pointer}
   </aside>
 </main>
 </div>
+
+<div class="swipe-toast" id="swipeToast"></div>
 
 <script>
 /*
@@ -293,6 +389,17 @@ let currentJuz = "all";
 let currentFilter = "all";
 let currentSurah = null;
 let previousScrollY = 0;
+
+// --- Preferensi pengaturan baru: navigasi & ukuran huruf & loop default ---
+let prefSwipe = localStorage.getItem("prefSwipe") !== "0"; // default aktif
+let prefNavBtn = localStorage.getItem("prefNavBtn") !== "0"; // default aktif
+let prefFontSize = Number(localStorage.getItem("prefFontSize") || 34);
+let prefLoopDefault = localStorage.getItem("prefLoopDefault") === "1"; // default nonaktif
+
+function applyFontSize(px){
+  document.documentElement.style.setProperty("--arabic-size", px + "px");
+}
+applyFontSize(prefFontSize);
 
 // --- Tema latar aplikasi ---
 function applyTheme(name){
@@ -415,12 +522,109 @@ function buildBismillahRegex(){
 }
 const BISMILLAH_REGEX = buildBismillahRegex();
 
+// --- Navigasi Sebelumnya/Berikutnya di dalam reader ---
+function updateReaderNav(){
+  const prevBtn=document.getElementById("prevSurahBtn");
+  const nextBtn=document.getElementById("nextSurahBtn");
+  const navbar=document.getElementById("readerNavbar");
+  const hint=document.getElementById("readerNavHint");
+
+  navbar.style.display = (prefNavBtn || prefSwipe) ? "flex" : "none";
+  prevBtn.style.visibility = prefNavBtn ? "visible" : "hidden";
+  nextBtn.style.visibility = prefNavBtn ? "visible" : "hidden";
+
+  if(currentSurah>0){
+    prevBtn.classList.remove("disabled");
+    document.getElementById("prevSurahName").textContent=surahs[currentSurah-1][0];
+  }else{
+    prevBtn.classList.add("disabled");
+    document.getElementById("prevSurahName").textContent="";
+  }
+  if(currentSurah<surahs.length-1){
+    nextBtn.classList.remove("disabled");
+    document.getElementById("nextSurahName").textContent=surahs[currentSurah+1][0];
+  }else{
+    nextBtn.classList.add("disabled");
+    document.getElementById("nextSurahName").textContent="";
+  }
+  hint.textContent = prefSwipe ? "Geser layar untuk pindah surat" : "";
+  hint.style.display = prefSwipe ? "block" : "none";
+}
+document.getElementById("prevSurahBtn").onclick=()=>{ if(currentSurah>0) openSurah(currentSurah-1); };
+document.getElementById("nextSurahBtn").onclick=()=>{ if(currentSurah<surahs.length-1) openSurah(currentSurah+1); };
+
+function showSwipeToast(msg){
+  const t=document.getElementById("swipeToast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(showSwipeToast._t);
+  showSwipeToast._t=setTimeout(()=>t.classList.remove("show"),900);
+}
+
+// Gestur geser (swipe) di dalam pembaca surat: geser ke kiri = surat
+// berikutnya, geser ke kanan = surat sebelumnya. Hanya aktif kalau
+// pengaturan "Geser untuk pindah surat" dinyalakan.
+(function setupSwipe(){
+  const readerEl=document.getElementById("reader");
+  let startX=0,startY=0,tracking=false;
+  readerEl.addEventListener("touchstart",e=>{
+    if(!prefSwipe || e.target.closest("audio")) return;
+    const t=e.touches[0];startX=t.clientX;startY=t.clientY;tracking=true;
+  },{passive:true});
+  readerEl.addEventListener("touchend",e=>{
+    if(!tracking || !prefSwipe) return;
+    tracking=false;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-startX, dy=t.clientY-startY;
+    if(Math.abs(dx)>65 && Math.abs(dx)>Math.abs(dy)*1.6){
+      if(dx<0 && currentSurah<surahs.length-1){ showSwipeToast("Surat berikutnya →"); openSurah(currentSurah+1); }
+      else if(dx>0 && currentSurah>0){ showSwipeToast("← Surat sebelumnya"); openSurah(currentSurah-1); }
+    }
+  },{passive:true});
+})();
+
+// Panah kiri/kanan keyboard juga bisa dipakai untuk pindah surat saat
+// reader terbuka (memudahkan pengguna desktop / keyboard eksternal).
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("reader").classList.contains("show")) return;
+  if(document.activeElement && ["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)) return;
+  if(e.key==="ArrowRight" && currentSurah>0){ openSurah(currentSurah-1); }
+  else if(e.key==="ArrowLeft" && currentSurah<surahs.length-1){ openSurah(currentSurah+1); }
+});
+
+// --- Streak membaca (fitur khas: hari berturut-turut membaca Qur'an) ---
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function dayDiff(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function recordReadingStreak(){
+  const today=todayStr();
+  const last=localStorage.getItem("streakLastDate");
+  let streak=Number(localStorage.getItem("streakCount")||0);
+  if(last===today){ /* sudah tercatat hari ini */ }
+  else if(last && dayDiff(last,today)===1){ streak+=1; }
+  else{ streak=1; }
+  localStorage.setItem("streakLastDate",today);
+  localStorage.setItem("streakCount",String(streak));
+  renderStreak();
+}
+function renderStreak(){
+  const streak=Number(localStorage.getItem("streakCount")||0);
+  const chip=document.getElementById("streakChip");
+  if(streak>0){
+    chip.style.display="inline-flex";
+    document.getElementById("streakCount").textContent=streak;
+  }else{
+    chip.style.display="none";
+  }
+}
+renderStreak();
+
 async function openSurah(i, fromPopState=false){
   currentSurah=i;
   const s=surahs[i];
 
   window.quranScrollY = window.scrollY;
   localStorage.setItem("lastSurah", i);
+  recordReadingStreak();
 
   if(!fromPopState){
     history.pushState({quranReader:true, surah:i}, "", "#surah-"+(i+1));
@@ -430,6 +634,7 @@ async function openSurah(i, fromPopState=false){
   document.getElementById("reader").classList.add("show");
   document.getElementById("readerTitle").textContent=`${s[0]} — ${s[2]}`;
   document.getElementById("readerSub").textContent=`Surat ke-${i+1} · ${s[3]} ayat · Juz ${juzLabel(s)}`;
+  updateReaderNav();
 
   // Reset player audio-per-surat setiap kali surat (baru) dibuka.
   const surahPlayer=document.getElementById("surahAudioPlayer");
@@ -437,7 +642,9 @@ async function openSurah(i, fromPopState=false){
   surahPlayer.removeAttribute("src");
   surahPlayer.load();
   surahPlayer.classList.remove("show");
+  surahPlayer.loop=prefLoopDefault;
   document.getElementById("surahAudioBtn").textContent="🔊 Putar Surat";
+  document.getElementById("surahLoopBtn").classList.toggle("on",prefLoopDefault);
 
   // Setiap buka surat (baik dari daftar maupun dari dalam reader),
   // mulai dari ATAS surat itu — jangan kebawa posisi scroll sebelumnya.
@@ -488,7 +695,18 @@ async function openSurah(i, fromPopState=false){
       d.innerHTML=`
         <div class="ayah-top">
           <span class="ayah-num">Ayat ${a.numberInSurah}</span>
-          <button class="audio" type="button" title="Putar audio">🔊 Putar</button>
+          <div class="ayah-actions">
+            <button class="audio" type="button" title="Putar audio">🔊 Putar</button>
+            <button class="loop-btn" type="button" title="Ulang ayat ini terus-menerus">🔁</button>
+            <button class="repeat-btn" type="button" title="Mode hafalan: ulang beberapa kali">🎯 Hafalan</button>
+            <select class="repeat-select" title="Jumlah pengulangan">
+              <option value="3">3x</option>
+              <option value="5">5x</option>
+              <option value="10">10x</option>
+              <option value="20">20x</option>
+            </select>
+            <span class="repeat-counter"></span>
+          </div>
         </div>
         <div class="ayah-ar" dir="rtl">${escapeHtml(arab)}</div>
         <div class="ayah-latin">${escapeHtml(latinText)}</div>
@@ -496,17 +714,79 @@ async function openSurah(i, fromPopState=false){
       `;
 
       const audioBtn=d.querySelector(".audio");
-      audioBtn.onclick=()=>{
-        const old=d.querySelector(".audio-player");
-        if(old){ old.pause(); old.remove(); audioBtn.textContent="🔊 Putar"; return; }
-        const audio=document.createElement("audio");
+      const loopBtn=d.querySelector(".loop-btn");
+      const repeatBtn=d.querySelector(".repeat-btn");
+      const repeatSelect=d.querySelector(".repeat-select");
+      const repeatCounter=d.querySelector(".repeat-counter");
+      let repeatsLeft=0;
+      let isLooping=prefLoopDefault;
+
+      function getPlayer(){ return d.querySelector(".audio-player"); }
+
+      function ensurePlayer(){
+        let audio=getPlayer();
+        if(audio) return audio;
+        audio=document.createElement("audio");
         audio.className="audio-player";
         audio.controls=true;
         audio.preload="none";
         audio.src=`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${a.number}.mp3`;
         d.insertBefore(audio, d.querySelector(".ayah-ar"));
+        audio.onended=()=>{
+          if(repeatsLeft>1){
+            repeatsLeft--;
+            repeatCounter.textContent=`Sisa ${repeatsLeft}x`;
+            audio.currentTime=0;
+            audio.play().catch(()=>{});
+          }else if(repeatsLeft===1){
+            repeatsLeft=0;
+            repeatCounter.classList.remove("show");
+            audioBtn.textContent="🔊 Putar";
+          }else if(!audio.loop){
+            audioBtn.textContent="🔊 Putar";
+          }
+        };
+        return audio;
+      }
+
+      audioBtn.onclick=()=>{
+        const existing=getPlayer();
+        if(existing && !existing.paused){
+          existing.pause();
+          audioBtn.textContent="🔊 Putar";
+          return;
+        }
+        repeatsLeft=0;
+        repeatCounter.classList.remove("show");
+        const audio=ensurePlayer();
+        audio.loop=isLooping;
         audio.play().catch(()=>{ audioBtn.textContent="▶ Tekan audio di bawah"; });
-        audio.onended=()=>audioBtn.textContent="🔊 Putar";
+        audioBtn.textContent="⏸ Berhenti";
+      };
+
+      loopBtn.classList.toggle("on",isLooping);
+      loopBtn.onclick=()=>{
+        isLooping=!isLooping;
+        loopBtn.classList.toggle("on",isLooping);
+        const audio=getPlayer();
+        if(audio) audio.loop=isLooping;
+      };
+
+      // Mode hafalan (murojaah): putar ayat yang sama berulang sejumlah
+      // kali secara otomatis — berguna untuk latihan menghafal ayat.
+      repeatBtn.onclick=()=>{
+        repeatSelect.classList.toggle("show");
+      };
+      repeatSelect.onchange=()=>{
+        const n=Number(repeatSelect.value);
+        repeatsLeft=n;
+        repeatCounter.textContent=`Sisa ${n}x`;
+        repeatCounter.classList.add("show");
+        repeatSelect.classList.remove("show");
+        const audio=ensurePlayer();
+        audio.loop=false;
+        audio.currentTime=0;
+        audio.play().catch(()=>{});
         audioBtn.textContent="⏸ Berhenti";
       };
 
@@ -630,7 +910,7 @@ document.addEventListener("click",e=>{
   if(!e.target.closest(".search")) suggestBox.classList.remove("show");
 });
 
-// --- Panel pengaturan tema/latar ---
+// --- Panel pengaturan tema/latar/navigasi/ukuran huruf/loop ---
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsPanel = document.getElementById("settingsPanel");
 settingsBtn.onclick=(e)=>{ e.stopPropagation(); settingsPanel.classList.toggle("show"); };
@@ -639,9 +919,24 @@ document.addEventListener("click",e=>{
   if(!e.target.closest(".settings-wrap")) settingsPanel.classList.remove("show");
 });
 
-// --- Audio penuh satu surat (terpisah dari audio per-ayat) ---
+const swipeToggle=document.getElementById("swipeToggle");
+const navBtnToggle=document.getElementById("navBtnToggle");
+const fontSizeSlider=document.getElementById("fontSizeSlider");
+const loopDefaultToggle=document.getElementById("loopDefaultToggle");
+swipeToggle.checked=prefSwipe;
+navBtnToggle.checked=prefNavBtn;
+fontSizeSlider.value=prefFontSize;
+loopDefaultToggle.checked=prefLoopDefault;
+
+swipeToggle.onchange=()=>{ prefSwipe=swipeToggle.checked; localStorage.setItem("prefSwipe",prefSwipe?"1":"0"); updateReaderNav(); };
+navBtnToggle.onchange=()=>{ prefNavBtn=navBtnToggle.checked; localStorage.setItem("prefNavBtn",prefNavBtn?"1":"0"); updateReaderNav(); };
+fontSizeSlider.oninput=()=>{ prefFontSize=Number(fontSizeSlider.value); localStorage.setItem("prefFontSize",String(prefFontSize)); applyFontSize(prefFontSize); };
+loopDefaultToggle.onchange=()=>{ prefLoopDefault=loopDefaultToggle.checked; localStorage.setItem("prefLoopDefault",prefLoopDefault?"1":"0"); };
+
+// --- Audio penuh satu surat (terpisah dari audio per-ayat), dengan loop ---
 const surahAudioBtn = document.getElementById("surahAudioBtn");
 const surahAudioPlayer = document.getElementById("surahAudioPlayer");
+const surahLoopBtn = document.getElementById("surahLoopBtn");
 surahAudioBtn.onclick=()=>{
   if(currentSurah===null) return;
   if(surahAudioPlayer.classList.contains("show") && !surahAudioPlayer.paused){
@@ -656,9 +951,13 @@ surahAudioBtn.onclick=()=>{
   surahAudioPlayer.play().catch(()=>{});
   surahAudioBtn.textContent="⏸ Berhenti";
 };
+surahLoopBtn.onclick=()=>{
+  surahAudioPlayer.loop=!surahAudioPlayer.loop;
+  surahLoopBtn.classList.toggle("on",surahAudioPlayer.loop);
+};
 surahAudioPlayer.addEventListener("pause",()=>{ surahAudioBtn.textContent="🔊 Putar Surat"; });
 surahAudioPlayer.addEventListener("play",()=>{ surahAudioBtn.textContent="⏸ Berhenti"; });
-surahAudioPlayer.addEventListener("ended",()=>{ surahAudioBtn.textContent="🔊 Putar Surat"; });
+surahAudioPlayer.addEventListener("ended",()=>{ if(!surahAudioPlayer.loop) surahAudioBtn.textContent="🔊 Putar Surat"; });
 
 document.querySelectorAll(".filters button").forEach(b=>b.onclick=()=>{
   currentFilter=b.dataset.filter;document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderList();
@@ -700,6 +999,38 @@ window.addEventListener("scroll",()=>{
   }
 },{passive:true});
 document.getElementById("continueBtn").onclick=()=>openSurah(Number(localStorage.getItem("lastSurah")||113));
+
+// --- Ayat Pilihan Hari Ini: fitur khas, ayat berbeda tiap hari (seeded
+// oleh tanggal), lengkap dengan terjemahan, tanpa perlu buka surat dulu. ---
+async function loadDailyAyah(){
+  try{
+    const card=document.getElementById("dailyCard");
+    const dayOfYear=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
+    const totalAyat=6236; // total ayat dalam Al-Qur'an
+    const globalNum=(dayOfYear*37 % totalAyat)+1; // sebaran semu-acak namun konsisten per hari
+    const r=await fetch(`https://api.alquran.cloud/v1/ayah/${globalNum}/editions/quran-uthmani,id.indonesian`);
+    if(!r.ok) throw new Error("gagal");
+    const data=await r.json();
+    const eds=data.data||[];
+    const arEd=eds.find(x=>x.edition?.identifier==="quran-uthmani")||eds[0];
+    const idEd=eds.find(x=>x.edition?.identifier==="id.indonesian")||{};
+    document.getElementById("dailyAr").textContent=arEd?.text||"";
+    document.getElementById("dailyId").textContent=idEd?.text||"";
+    const surahNum=(arEd?.surah?.number)||1;
+    const ayahInSurah=(arEd?.numberInSurah)||1;
+    const refText=`${surahs[surahNum-1][0]} : ${ayahInSurah}`;
+    document.getElementById("dailyRefSmall").textContent=refText;
+    document.getElementById("dailyRef").textContent="Baca "+surahs[surahNum-1][0]+" lengkap →";
+    document.getElementById("dailyRef").onclick=()=>{ openSurah(surahNum-1); };
+    card.classList.add("show");
+  }catch(e){
+    console.error(e);
+    // Kalau gagal (mis. offline), widget cukup disembunyikan saja, tidak
+    // mengganggu bagian lain dari aplikasi.
+  }
+}
+loadDailyAyah();
+
 // Posisi scroll disimpan selama pengguna berada di daftar surat.
 renderJuz();renderList();renderSaved();
 </script>
